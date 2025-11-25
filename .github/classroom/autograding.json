@@ -1,0 +1,32 @@
+{
+  "tests": [
+    {
+      "name": "API - Returns all projects",
+      "setup": "npm install",
+      "run": "npm test -- -t=\"GET /api/projects returns list\"",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 30
+    },
+    {
+      "name": "API - Returns project by ID",
+      "setup": "npm install",
+      "run": "npm test -- -t=\"GET /api/projects/:id returns project\"",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 30
+    },
+    {
+      "name": "Database - Project model exists",
+      "setup": "npm install",
+      "run": "npm test -- -t=\"Project model exists in schema\"",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 30
+    }
+  ],
+  "version": 0
+}

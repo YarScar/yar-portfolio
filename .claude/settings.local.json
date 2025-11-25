@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx create-next-app:*)",
+      "Bash(npm init:*)",
+      "Bash(npm install)",
+      "Bash(npx prisma init:*)",
+      "Bash(npx prisma generate:*)",
+      "Bash(npx prisma migrate:*)",
+      "Bash(npm run dev:*)",
+      "Bash(curl:*)",
+      "Bash(tree:*)",
+      "Bash(pkill:*)",
+      "Bash(taskkill:*)",
+      "Bash(npx prisma:*)",
+      "Bash(del /f prisma\\dev.db prisma\\dev.db-journal 2)",
+      "Bash(nul)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
