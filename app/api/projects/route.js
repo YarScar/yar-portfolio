@@ -8,7 +8,11 @@ const adapter = new PrismaPg({
 const prisma = new PrismaClient({ adapter });
 
 export async function GET() {
-  // TODO: Implement this route
-  // Should return all projects from the database as JSON
-  // Use prisma.project.findMany() to query the database
+  try {
+    const projects = await prisma.project.findMany({ orderBy: { createdAt: 'desc' } });
+    return new Response(JSON.stringify(projects), { status: 200, headers: { 'Content-Type': 'application/json' } });
+  } catch (err) {
+    console.error('GET /api/projects error', err);
+    return new Response(JSON.stringify({ message: 'Failed to fetch projects' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+  }
 }

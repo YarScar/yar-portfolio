@@ -8,13 +8,17 @@ const adapter = new PrismaPg({
 const prisma = new PrismaClient({ adapter });
 
 export async function GET(request, { params }) {
-  // TODO: Implement this route
-  // Get the id from params and convert to a number
   const id = Number(params.id);
+  if (Number.isNaN(id)) {
+    return new Response(JSON.stringify({ message: 'Invalid id' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+  }
 
-  // TODO: Query the database for a project with this id
-  // Use prisma.project.findUnique({ where: { id } })
-
-  // TODO: If project not found, return 404
-  // TODO: If project found, return it as JSON
+  try {
+    const project = await prisma.project.findUnique({ where: { id } });
+    if (!project) return new Response(JSON.stringify({ message: 'Not found' }), { status: 404, headers: { 'Content-Type': 'application/json' } });
+    return new Response(JSON.stringify(project), { status: 200, headers: { 'Content-Type': 'application/json' } });
+  } catch (err) {
+    console.error('GET /api/projects/[id] error', err);
+    return new Response(JSON.stringify({ message: 'Failed to fetch project' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+  }
 }

@@ -1,0 +1,34 @@
+nohup: ignoring input
+
+> portfolio-api@1.0.0 dev
+> next dev
+
+  ▲ Next.js 14.2.33
+  - Local:        http://localhost:3000
+  - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 2.1s
+ ○ Compiling /api/projects ...
+ ✓ Compiled /api/projects in 861ms (45 modules)
+ GET /api/projects 200 in 1424ms
+ GET /api/projects 200 in 103ms
+ ✓ Compiled /api/projects/[id] in 213ms (47 modules)
+ GET /api/projects/1 200 in 1315ms
+ GET /api/projects/99999 404 in 45ms
+   Reload env: .env.local
+ ✓ Compiled in 1440ms (203 modules)
+ ○ Compiling /projects ...
+ ✓ Compiled /projects in 1322ms (483 modules)
+ ✓ Compiled /about in 429ms (485 modules)
+ GET /about 200 in 194ms
+ ✓ Compiled /projects/[id] in 514ms (487 modules)
+ GET /projects/1 200 in 141ms
+ ○ Compiling /api/projects ...
+ ✓ Compiled /api/projects in 1015ms (267 modules)
+ GET /api/projects 200 in 1337ms
+ GET /api/projects 200 in 45ms
+ ✓ Compiled /api/projects/[id] in 172ms (269 modules)
+ GET /api/projects/1 200 in 703ms
+ GET /api/projects/99999 404 in 25ms
+^C
