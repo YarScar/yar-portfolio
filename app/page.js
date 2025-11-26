@@ -2,21 +2,18 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <div>
-      <h1>🚀 Showcase Express</h1>
-      <p>Portfolio API with Next.js Routes + Database</p>
-      <nav style={{ marginTop: '2rem' }}>
-        <Link href="/projects" style={{
-          padding: '0.5rem 1rem',
-          backgroundColor: '#0070f3',
-          color: 'white',
-          textDecoration: 'none',
-          borderRadius: '5px',
-          display: 'inline-block'
-        }}>
-          View Projects
-        </Link>
-      </nav>
-    </div>
+    <section>
+      <div className="hero">
+        <div className="hero-left">
+          <h1 className="hero-title">Crafting elegant interfaces with code</h1>
+          <p className="hero-sub">I build web experiences — React & Next.js developer focused on clean design, performance, and delightful interactions.</p>
+
+          <div style={{display:'flex',gap:'0.75rem'}}>
+            <Link href="/projects" className="btn">View Projects</Link>
+            <a href="#contact" className="btn secondary">Contact</a>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }

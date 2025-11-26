@@ -3,18 +3,33 @@ export const metadata = {
   description: "Showcase Express - Portfolio API with Next.js Routes + Database",
 };
 
+import './globals.css';
+import Link from 'next/link';
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <main style={{
-          maxWidth: '1200px',
-          margin: '0 auto',
-          padding: '2rem',
-          fontFamily: 'system-ui, -apple-system, sans-serif'
-        }}>
-          {children}
-        </main>
+        <div className="page-root">
+          <header className="site-header">
+            <div className="site-header-inner">
+              <Link href="/" className="brand">Showcase Express</Link>
+              <nav className="site-nav">
+                <Link href="/about" className="nav-link">About</Link>
+                <Link href="/projects" className="nav-link">Projects</Link>
+                <Link href="/contact" className="nav-link">Contact</Link>
+              </nav>
+            </div>
+          </header>
+
+          <main className="container">{children}</main>
+
+          <footer className="site-footer" id="contact">
+            <div className="site-footer-inner">
+              <p>© {new Date().getFullYear()} Showcase Express — Built with Next.js</p>
+            </div>
+          </footer>
+        </div>
       </body>
     </html>
   );
