@@ -112,6 +112,16 @@ body::after{
   100%{transform:translateY(-800px) translateX(100px);opacity:0}
 }
 
+@keyframes logoFloat{
+  0%, 100%{transform:translateY(0px)}
+  50%{transform:translateY(-8px)}
+}
+
+.project-logo:hover{
+  transform:scale(1.05);
+  box-shadow:0 12px 40px rgba(168,85,247,0.3);
+}
+
 .page-root{min-height:100vh;display:flex;flex-direction:column;position:relative;z-index:1}
 
 /* Container */
