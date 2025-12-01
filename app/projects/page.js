@@ -1,9 +1,9 @@
 import Link from "next/link";
 
 const sampleProjects = [
-  { id: 1, title: 'Portfolio Website', description: 'A personal portfolio showcasing projects and blog posts.', tags: ['Next.js','React'], url: '#' },
-  { id: 2, title: 'E‑commerce Demo', description: 'Small shop demo with cart and checkout flow.', tags: ['React','Prisma'], url: '#' },
-  { id: 3, title: 'Real‑time Chat', description: 'Websocket powered chat with rooms and online presence.', tags: ['Socket.io','Node'], url: '#' }
+  { id: 1, title: 'Najah', description: 'A React-based study app that brings together task management, a customizable Pomodoro timer, AI homework help, and lofi music in a smooth, productivity-focused workspace.', tags: ['Vite','React', 'Gemini API'], url: 'https://404sleepnotfound.vercel.app/' },
+  { id: 2, title: 'Immigo', description: 'An immigration support platform connecting immigrants with resources, legal assistance, and community support services.', tags: ['Next.js','React','Prisma'], url: 'https://immigo-pi.vercel.app/' },
+  { id: 3, title: 'Agentic Data Quality Analysis Platform', description: 'AI-powered data quality analysis platform that helps business users understand and improve dataset quality with intelligent insights.', tags: ['Next.js','React','OpenAI API','Chart.js'], url: 'https://data-analysis-tutorial-three.vercel.app/' }
 ];
 
 export default async function ProjectsPage() {

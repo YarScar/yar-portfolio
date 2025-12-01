@@ -16,8 +16,7 @@ export default function About() {
           <h3 style={{color:'var(--color-text-light)'}}>Selected Skills</h3>
           <ul style={{color:'var(--color-text)',marginTop:'0.5rem'}}>
             <li>Next.js & React</li>
-            <li>Modern JavaScript</li>
-            <li>HTML & CSS</li>
+            <li>TypeScript & modern JavaScript</li>
             <li>Prisma & PostgreSQL</li>
             <li>Responsive design & animations</li>
             <li>Testing & CI</li>
@@ -35,8 +34,8 @@ export default function About() {
         <aside style={{padding:'1rem',borderRadius:10,background:'rgba(255,255,255,0.02)',border:'1px solid rgba(55,48,163,0.06)'}}>
           <h4 style={{marginTop:0,color:'var(--color-text-light)'}}>Quick Info</h4>
           <p style={{color:'var(--color-text)'}}><strong>Location:</strong> Remote</p>
-          <p style={{color:'var(--color-text)'}}><strong>Available for:</strong> Contract / Part-Time</p>
-          <p style={{color:'var(--color-text)'}}><strong>Email:</strong> <a href="mailto:yarascarlet45@gmail.com" className="project-link">yarascarlet45@gmail.com</a></p>
+          <p style={{color:'var(--color-text)'}}><strong>Available for:</strong> Contract / Full-Time</p>
+          <p style={{color:'var(--color-text)'}}><strong>Email:</strong> <a href="mailto:your.email@example.com" className="project-link">your.email@example.com</a></p>
         </aside>
       </div>
     </section>
