@@ -42,8 +42,8 @@ export default function Contact() {
 
         <aside style={{padding:'1rem',borderRadius:10,background:'rgba(255,255,255,0.02)',border:'1px solid rgba(55,48,163,0.06)'}}>
           <h4 style={{marginTop:0,color:'var(--color-text-light)'}}>Other ways to reach me</h4>
-          <p style={{color:'var(--color-text)'}}>Email: <a href="mailto:your.email@example.com" className="project-link">your.email@example.com</a></p>
-          <p style={{color:'var(--color-text)'}}>Twitter: <a className="project-link" href="#">@yourhandle</a></p>
+          <p style={{color:'var(--color-text)'}}>Email: <a href="mailto:yarascarlet45@gmail.com" className="project-link">yarascarlet45@gmail.com</a></p>
+          <p style={{color:'var(--color-text)'}}>LinkedIn: <a className="project-link" href="https://www.linkedin.com/in/yara-kemeh-09b310319/">Yara Kemeh</a></p>
         </aside>
       </form>
     </section>
