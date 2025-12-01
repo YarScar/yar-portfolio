@@ -1,11 +1,25 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function About() {
   return (
     <section>
-      <div style={{marginBottom:'3rem',textAlign:'center',padding:'2rem 0'}}>
-        <h1 style={{margin:0,fontSize:'2.5rem',color:'var(--color-text-light)',background:'linear-gradient(135deg, #FAF5FF, #E9D5FF, #D8B4FE)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text'}}>About Me</h1>
-        <p style={{marginTop:'1rem',fontSize:'1.15rem',color:'var(--color-text)',opacity:0.9,maxWidth:'700px',margin:'1rem auto 0'}}>Full-stack developer passionate about creating innovative solutions that blend cutting-edge technology with intuitive user experiences.</p>
+      <div style={{marginBottom:'3rem',textAlign:'center',padding:'2rem 0',display:'flex',flexDirection:'column',alignItems:'center',gap:'2rem'}}>
+        <div style={{position:'relative',width:'180px',height:'180px',borderRadius:'50%',background:'linear-gradient(135deg, #A78BFA, #C084FC)',padding:'4px',boxShadow:'0 20px 60px rgba(168,85,247,0.4), 0 0 40px rgba(192,132,252,0.3)',animation:'profileFloat 6s ease-in-out infinite'}}>
+          <div style={{position:'relative',width:'100%',height:'100%',borderRadius:'50%',overflow:'hidden',border:'3px solid #0F0A1F'}}>
+            <Image 
+              src="/images/linkedin.png"
+              alt="Profile"
+              fill
+              style={{objectFit:'cover'}}
+              priority
+            />
+          </div>
+        </div>
+        <div>
+          <h1 style={{margin:0,fontSize:'2.5rem',color:'var(--color-text-light)',background:'linear-gradient(135deg, #FAF5FF, #E9D5FF, #D8B4FE)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text'}}>About Me</h1>
+          <p style={{marginTop:'1rem',fontSize:'1.15rem',color:'var(--color-text)',opacity:0.9,maxWidth:'700px',margin:'1rem auto 0'}}>Full-stack developer passionate about creating innovative solutions that blend cutting-edge technology with intuitive user experiences.</p>
+        </div>
       </div>
 
       <div style={{display:'grid',gridTemplateColumns:'1fr 350px',gap:'2rem',alignItems:'start',marginBottom:'2rem'}}>
