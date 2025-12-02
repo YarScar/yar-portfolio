@@ -26,6 +26,9 @@ export default function CatSprite({
 }) {
   const spriteRef = useRef(null);
   const [currentAnimation, setCurrentAnimation] = useState(animation);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [position, setPosition] = useState({ x: 0, y: 0 });
 
   const anim = typeof currentAnimation === "string" ? CAT_ANIMATIONS[currentAnimation] : currentAnimation;
   const frames = anim?.frames ?? 4;
@@ -46,13 +49,46 @@ export default function CatSprite({
     return () => clearInterval(interval);
   }, [row, frames, fps, frameSize, loop, currentAnimation]);
 
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+    const rect = spriteRef.current.getBoundingClientRect();
+    setDragOffset({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    });
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    setPosition({
+      x: e.clientX - dragOffset.x,
+      y: e.clientY - dragOffset.y
+    });
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  useEffect(() => {
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      };
+    }
+  }, [isDragging, dragOffset]);
+
   return (
     <div
       ref={spriteRef}
       aria-label={`cat-sprite-${currentAnimation}`}
       className={className}
-      onMouseEnter={() => setCurrentAnimation(hoverAnimation)}
-      onMouseLeave={() => setCurrentAnimation("idleSit")}
+      onMouseDown={handleMouseDown}
+      onMouseEnter={() => !isDragging && setCurrentAnimation(hoverAnimation)}
+      onMouseLeave={() => !isDragging && setCurrentAnimation("idleSit")}
       style={{
         width: frameSize,
         height: frameSize,
@@ -63,6 +99,12 @@ export default function CatSprite({
         backgroundRepeat: "no-repeat",
         imageRendering: "pixelated",
         backgroundSize: "auto",
+        position: 'fixed',
+        left: position.x,
+        top: position.y,
+        cursor: isDragging ? 'grabbing' : 'grab',
+        zIndex: isDragging ? 1000 : 'auto',
+        userSelect: 'none',
         ...style,
       }}
     />
