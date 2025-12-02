@@ -44,3 +44,44 @@ export async function DELETE(request, { params }) {
     return new Response(JSON.stringify({ message: 'Failed to delete project' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
   }
 }
+
+export async function PUT(request, { params }) {
+  const id = Number(params.id);
+  if (Number.isNaN(id)) {
+    return new Response(JSON.stringify({ message: 'Invalid id' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+  }
+
+  try {
+    const body = await request.json();
+    const { title, description, url, image, tags } = body;
+    
+    if (!title || !description) {
+      return new Response(
+        JSON.stringify({ message: 'Title and description are required' }), 
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Check if project exists
+    const existingProject = await prisma.project.findUnique({ where: { id } });
+    if (!existingProject) {
+      return new Response(JSON.stringify({ message: 'Project not found' }), { status: 404, headers: { 'Content-Type': 'application/json' } });
+    }
+
+    const updatedProject = await prisma.project.update({
+      where: { id },
+      data: {
+        title,
+        description,
+        url: url || null,
+        image: image || null,
+        tags: Array.isArray(tags) ? tags : []
+      }
+    });
+
+    return new Response(JSON.stringify(updatedProject), { status: 200, headers: { 'Content-Type': 'application/json' } });
+  } catch (err) {
+    console.error('PUT /api/projects/[id] error', err);
+    return new Response(JSON.stringify({ message: 'Failed to update project' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+  }
+}
