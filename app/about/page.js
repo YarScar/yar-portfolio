@@ -1,9 +1,104 @@
+"use client";
+
+import { useState, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
-export const metadata = {
-  title: "About - Yara Kemeh | Portfolio",
-  description: "Learn about Yara Kemeh - Full-stack developer passionate about creating innovative solutions",
+const RotatableCube = ({ children, className = "", style = {} }) => {
+  const [rotation, setRotation] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [isHovering, setIsHovering] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const cubeRef = useRef(null);
+
+  const handleMouseDown = (e) => {
+    // Don't start dragging if clicking on interactive elements
+    if (e.target.tagName === 'BUTTON' || 
+        e.target.tagName === 'A' || 
+        e.target.tagName === 'INPUT' || 
+        e.target.tagName === 'TEXTAREA' ||
+        e.target.closest('button') ||
+        e.target.closest('a') ||
+        e.target.classList.contains('btn')) {
+      return;
+    }
+    
+    setIsDragging(true);
+    setDragStart({ x: e.clientX, y: e.clientY });
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    
+    const deltaX = e.clientX - dragStart.x;
+    const deltaY = e.clientY - dragStart.y;
+    
+    setRotation(prev => ({
+      x: Math.max(-30, Math.min(30, prev.x - deltaY * 0.1)),
+      y: prev.y + deltaX * 0.1
+    }));
+    
+    setDragStart({ x: e.clientX, y: e.clientY });
+  };
+
+  const handleMouseUp = () => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    
+    // Bounce back to original position
+    setRotation({ x: 0, y: 0 });
+  };
+
+  const handleMouseEnter = () => {
+    setIsHovering(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovering(false);
+    if (isDragging) {
+      setIsDragging(false);
+      setRotation({ x: 0, y: 0 });
+    }
+  };
+
+  const getTransform = () => {
+    if (isDragging) {
+      return `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`;
+    } else if (isHovering) {
+      return 'rotateX(-5deg) rotateY(5deg) translateY(-5px)';
+    }
+    return '';
+  };
+
+  return (
+    <div 
+      ref={cubeRef}
+      className={`cube-3d ${isDragging ? 'dragging' : ''} ${className}`}
+      style={{
+        ...style,
+        transform: getTransform(),
+        pointerEvents: 'auto'
+      }}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onClick={(e) => {
+        // Prevent click propagation when dragging
+        if (isDragging) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      }}
+    >
+      <div style={{ pointerEvents: 'auto', position: 'relative', zIndex: 1 }}>
+        {children}
+      </div>
+    </div>
+  );
 };
 
 export default function About() {
@@ -30,12 +125,12 @@ export default function About() {
 
       <div style={{display:'grid',gridTemplateColumns:'1fr 350px',gap:'2rem',alignItems:'start',marginBottom:'2rem'}}>
         <div>
-          <div style={{background:'linear-gradient(135deg, rgba(168,85,247,0.08), rgba(192,132,252,0.05))',padding:'2rem',borderRadius:'16px',border:'1px solid rgba(168,85,247,0.2)',marginBottom:'2rem',boxShadow:'0 8px 32px rgba(168,85,247,0.1)'}}>
+          <RotatableCube style={{background:'linear-gradient(135deg, rgba(168,85,247,0.08), rgba(192,132,252,0.05))',padding:'2rem',borderRadius:'16px',border:'1px solid rgba(168,85,247,0.2)',marginBottom:'2rem',boxShadow:'0 8px 32px rgba(168,85,247,0.1)'}}>
             <h2 style={{color:'var(--color-text-light)',fontSize:'1.8rem',marginTop:0,marginBottom:'1rem'}}>What I Do</h2>
             <p style={{color:'var(--color-text)',lineHeight:'1.7',fontSize:'1.05rem'}}>I build full-stack web applications with a focus on creating seamless user experiences. From AI-powered productivity tools to immigration support platforms, I specialize in turning complex problems into elegant, accessible solutions using modern web technologies.</p>
-          </div>
+          </RotatableCube>
 
-          <div style={{background:'linear-gradient(135deg, rgba(168,85,247,0.08), rgba(192,132,252,0.05))',padding:'2rem',borderRadius:'16px',border:'1px solid rgba(168,85,247,0.2)',marginBottom:'2rem',boxShadow:'0 8px 32px rgba(168,85,247,0.1)'}}>
+          <RotatableCube style={{background:'linear-gradient(135deg, rgba(168,85,247,0.08), rgba(192,132,252,0.05))',padding:'2rem',borderRadius:'16px',border:'1px solid rgba(168,85,247,0.2)',marginBottom:'2rem',boxShadow:'0 8px 32px rgba(168,85,247,0.1)'}}>
             <h3 style={{color:'var(--color-text-light)',fontSize:'1.5rem',marginTop:0,marginBottom:'1.25rem'}}>Technical Skills</h3>
             <div style={{display:'grid',gridTemplateColumns:'repeat(2, 1fr)',gap:'0.75rem'}}>
               <div style={{background:'rgba(168,85,247,0.1)',padding:'0.75rem 1rem',borderRadius:'10px',border:'1px solid rgba(168,85,247,0.25)',color:'var(--color-accent)',fontWeight:'500'}}>⚛️ React & Vite</div>
@@ -45,20 +140,20 @@ export default function About() {
               <div style={{background:'rgba(168,85,247,0.1)',padding:'0.75rem 1rem',borderRadius:'10px',border:'1px solid rgba(168,85,247,0.25)',color:'var(--color-accent)',fontWeight:'500'}}>💻 JavaScript</div>
               <div style={{background:'rgba(168,85,247,0.1)',padding:'0.75rem 1rem',borderRadius:'10px',border:'1px solid rgba(168,85,247,0.25)',color:'var(--color-accent)',fontWeight:'500'}}>🎨 UI/UX Design</div>
             </div>
-          </div>
+          </RotatableCube>
 
-          <div style={{background:'linear-gradient(135deg, rgba(168,85,247,0.08), rgba(192,132,252,0.05))',padding:'2rem',borderRadius:'16px',border:'1px solid rgba(168,85,247,0.2)',boxShadow:'0 8px 32px rgba(168,85,247,0.1)'}}>
+          <RotatableCube style={{background:'linear-gradient(135deg, rgba(168,85,247,0.08), rgba(192,132,252,0.05))',padding:'2rem',borderRadius:'16px',border:'1px solid rgba(168,85,247,0.2)',boxShadow:'0 8px 32px rgba(168,85,247,0.1)'}}>
             <h3 style={{color:'var(--color-text-light)',fontSize:'1.5rem',marginTop:0,marginBottom:'1rem'}}>My Approach</h3>
             <p style={{color:'var(--color-text)',lineHeight:'1.7',fontSize:'1.05rem',marginBottom:'1.5rem'}}>I believe in building products that solve real problems. Whether it's creating study tools that help students succeed or platforms that support immigrants in their journey, I focus on user-centric design and clean, maintainable code.</p>
             <div style={{display:'flex',gap:'0.75rem',flexWrap:'wrap'}}>
               <Link href="/projects" className="btn">View My Work</Link>
               <Link href="/contact" className="btn secondary">Let's Connect</Link>
             </div>
-          </div>
+          </RotatableCube>
         </div>
 
         <aside style={{position:'sticky',top:'2rem'}}>
-          <div style={{padding:'1.75rem',borderRadius:'16px',background:'linear-gradient(135deg, rgba(168,85,247,0.12), rgba(192,132,252,0.08))',border:'2px solid rgba(168,85,247,0.25)',boxShadow:'0 12px 48px rgba(168,85,247,0.2)',marginBottom:'1.5rem'}}>
+          <RotatableCube style={{padding:'1.75rem',borderRadius:'16px',background:'linear-gradient(135deg, rgba(168,85,247,0.12), rgba(192,132,252,0.08))',border:'2px solid rgba(168,85,247,0.25)',boxShadow:'0 12px 48px rgba(168,85,247,0.2)',marginBottom:'1.5rem'}}>
             <h4 style={{marginTop:0,marginBottom:'1.5rem',color:'var(--color-text-light)',fontSize:'1.3rem',textAlign:'center'}}>Quick Info</h4>
             <div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
               <div style={{padding:'0.75rem',background:'rgba(255,255,255,0.03)',borderRadius:'10px',border:'1px solid rgba(168,85,247,0.15)'}}>
@@ -74,12 +169,12 @@ export default function About() {
                 <a href="mailto:yarascarlet45@gmail.com" className="project-link" style={{fontSize:'0.95rem',wordBreak:'break-word'}}>yarascarlet45@gmail.com</a>
               </div>
             </div>
-          </div>
+          </RotatableCube>
           
-          <div style={{padding:'1.5rem',borderRadius:'16px',background:'linear-gradient(135deg, rgba(168,85,247,0.08), rgba(192,132,252,0.05))',border:'1px solid rgba(168,85,247,0.2)',textAlign:'center'}}>
+          <RotatableCube style={{padding:'1.5rem',borderRadius:'16px',background:'linear-gradient(135deg, rgba(168,85,247,0.08), rgba(192,132,252,0.05))',border:'1px solid rgba(168,85,247,0.2)',textAlign:'center'}}>
             <div style={{fontSize:'2.5rem',marginBottom:'0.5rem'}}>🚀</div>
             <p style={{color:'var(--color-text)',fontSize:'0.95rem',margin:0,lineHeight:'1.6'}}>Let's build something amazing together</p>
-          </div>
+          </RotatableCube>
         </aside>
       </div>
     </section>

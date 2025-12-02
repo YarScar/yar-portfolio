@@ -24,7 +24,7 @@ export default function Contact() {
       <p style={{color:'var(--color-text)',marginTop:'0.5rem'}}>Want to work together or have a question? Send a message and I'll get back to you.</p>
 
       <form onSubmit={handleSubmit} style={{marginTop:'1rem',display:'grid',gridTemplateColumns:'1fr 320px',gap:'1rem',alignItems:'start'}}>
-        <div>
+        <div style={{background:'linear-gradient(135deg, rgba(168,85,247,0.08), rgba(192,132,252,0.05))',padding:'2rem',borderRadius:'16px',border:'1px solid rgba(168,85,247,0.2)',boxShadow:'0 8px 32px rgba(168,85,247,0.1)'}}>
           <label style={{display:'block',color:'var(--color-text)',marginBottom:'0.4rem'}}>Name</label>
           <input value={state.name} onChange={e => setState(s=>({...s,name:e.target.value}))} className="input" required />
 
@@ -40,7 +40,7 @@ export default function Contact() {
           </div>
         </div>
 
-        <aside style={{padding:'1rem',borderRadius:10,background:'rgba(255,255,255,0.02)',border:'1px solid rgba(55,48,163,0.06)'}}>
+        <aside style={{padding:'1.75rem',borderRadius:'16px',background:'linear-gradient(135deg, rgba(168,85,247,0.12), rgba(192,132,252,0.08))',border:'2px solid rgba(168,85,247,0.25)',boxShadow:'0 12px 48px rgba(168,85,247,0.2)'}}>
           <h4 style={{marginTop:0,color:'var(--color-text-light)'}}>Other ways to reach me</h4>
           <p style={{color:'var(--color-text)'}}>Email: <a href="mailto:yarascarlet45@gmail.com" className="project-link">yarascarlet45@gmail.com</a></p>
           <p style={{color:'var(--color-text)'}}>LinkedIn: <a className="project-link" href="https://www.linkedin.com/in/yara-kemeh-09b310319/">Yara Kemeh</a></p>
