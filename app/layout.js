@@ -5,11 +5,21 @@ export const metadata = {
 
 import './globals.css';
 import Link from 'next/link';
+import CatSprite from "./components/CatSprite";
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
+
+         {/* 🔥 Global Sprite (stays on every page) */}
+        <CatSprite
+          frameWidth={64}
+          frameHeight={64}
+          steps={8}
+          fps={10}
+        />
+        
         <div className="page-root">
           <header className="site-header">
             <div className="site-header-inner">
