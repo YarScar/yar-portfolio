@@ -36,7 +36,7 @@ export default function About() {
               <div style={{background:'rgba(168,85,247,0.1)',padding:'0.75rem 1rem',borderRadius:'10px',border:'1px solid rgba(168,85,247,0.25)',color:'var(--color-accent)',fontWeight:'500'}}>▲ Next.js</div>
               <div style={{background:'rgba(168,85,247,0.1)',padding:'0.75rem 1rem',borderRadius:'10px',border:'1px solid rgba(168,85,247,0.25)',color:'var(--color-accent)',fontWeight:'500'}}>🤖 AI Integration</div>
               <div style={{background:'rgba(168,85,247,0.1)',padding:'0.75rem 1rem',borderRadius:'10px',border:'1px solid rgba(168,85,247,0.25)',color:'var(--color-accent)',fontWeight:'500'}}>🗄️ Prisma & PostgreSQL</div>
-              <div style={{background:'rgba(168,85,247,0.1)',padding:'0.75rem 1rem',borderRadius:'10px',border:'1px solid rgba(168,85,247,0.25)',color:'var(--color-accent)',fontWeight:'500'}}>💻 JavaScript/TypeScript</div>
+              <div style={{background:'rgba(168,85,247,0.1)',padding:'0.75rem 1rem',borderRadius:'10px',border:'1px solid rgba(168,85,247,0.25)',color:'var(--color-accent)',fontWeight:'500'}}>💻 JavaScript</div>
               <div style={{background:'rgba(168,85,247,0.1)',padding:'0.75rem 1rem',borderRadius:'10px',border:'1px solid rgba(168,85,247,0.25)',color:'var(--color-accent)',fontWeight:'500'}}>🎨 UI/UX Design</div>
             </div>
           </div>
@@ -61,11 +61,11 @@ export default function About() {
               </div>
               <div style={{padding:'0.75rem',background:'rgba(255,255,255,0.03)',borderRadius:'10px',border:'1px solid rgba(168,85,247,0.15)'}}>
                 <div style={{fontSize:'0.85rem',color:'var(--color-accent)',marginBottom:'0.25rem',fontWeight:'600'}}>💼 Available For</div>
-                <div style={{color:'var(--color-text)',fontWeight:'500'}}>Contract / Full-Time</div>
+                <div style={{color:'var(--color-text)',fontWeight:'500'}}>Contract / Part-Time</div>
               </div>
               <div style={{padding:'0.75rem',background:'rgba(255,255,255,0.03)',borderRadius:'10px',border:'1px solid rgba(168,85,247,0.15)'}}>
                 <div style={{fontSize:'0.85rem',color:'var(--color-accent)',marginBottom:'0.25rem',fontWeight:'600'}}>✉️ Email</div>
-                <a href="mailto:your.email@example.com" className="project-link" style={{fontSize:'0.95rem',wordBreak:'break-word'}}>your.email@example.com</a>
+                <a href="mailto:yarascarlet45@gmail.com" className="project-link" style={{fontSize:'0.95rem',wordBreak:'break-word'}}>yarascarlet45@gmail.com</a>
               </div>
             </div>
           </div>
