@@ -20,7 +20,7 @@ export async function GET() {
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { title, description, technologies, url, image } = body;
+    const { title, description, url, image, tags } = body;
     
     if (!title || !description) {
       return new Response(
@@ -34,7 +34,8 @@ export async function POST(request) {
         title,
         description,
         url: url || null,
-        image: image || null
+        image: image || null,
+        tags: Array.isArray(tags) ? tags : []
       }
     });
 

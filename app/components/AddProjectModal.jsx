@@ -6,7 +6,8 @@ export default function AddProjectModal({ isOpen, onClose, onProjectAdded }) {
     title: "",
     description: "",
     url: "",
-    image: ""
+    image: "",
+    tags: ""
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -85,8 +86,11 @@ export default function AddProjectModal({ isOpen, onClose, onProjectAdded }) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          ...projectData,
-          image: imageUrl
+          title: projectData.title,
+          description: projectData.description,
+          url: projectData.url || null,
+          image: imageUrl || null,
+          tags: projectData.tags ? projectData.tags.split(',').map(tag => tag.trim()).filter(tag => tag) : []
         })
       });
 
@@ -102,7 +106,8 @@ export default function AddProjectModal({ isOpen, onClose, onProjectAdded }) {
         title: "",
         description: "",
         url: "",
-        image: ""
+        image: "",
+        tags: ""
       });
       setSelectedFile(null);
       
@@ -121,7 +126,8 @@ export default function AddProjectModal({ isOpen, onClose, onProjectAdded }) {
       title: "",
       description: "",
       url: "",
-      image: ""
+      image: "",
+      tags: ""
     });
     setSelectedFile(null);
     setError("");
@@ -271,6 +277,42 @@ export default function AddProjectModal({ isOpen, onClose, onProjectAdded }) {
                 fontFamily: 'inherit'
               }}
             />
+          </div>
+
+          <div>
+            <label style={{
+              color: 'var(--color-text-light)',
+              fontSize: '0.9rem',
+              fontWeight: '600',
+              marginBottom: '0.5rem',
+              display: 'block'
+            }}>
+              Technologies/Tags
+            </label>
+            <input
+              type="text"
+              value={projectData.tags}
+              onChange={(e) => handleInputChange('tags', e.target.value)}
+              placeholder="React, Next.js, OpenAI API (comma-separated)"
+              style={{
+                width: '100%',
+                padding: '0.8rem',
+                borderRadius: '10px',
+                border: '2px solid rgba(168,85,247,0.3)',
+                background: 'rgba(255,255,255,0.05)',
+                color: 'var(--color-text)',
+                fontSize: '1rem'
+              }}
+            />
+            <small style={{
+              color: 'var(--color-text)',
+              fontSize: '0.8rem',
+              opacity: 0.7,
+              marginTop: '0.5rem',
+              display: 'block'
+            }}>
+              💡 Enter technologies/frameworks separated by commas
+            </small>
           </div>
 
           <div>

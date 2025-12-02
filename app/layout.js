@@ -1,5 +1,5 @@
 "use client";
-import { useState, createContext, useContext } from 'react';
+import { useState, createContext, useContext, useEffect } from 'react';
 import './globals.css';
 import Link from 'next/link';
 import CatSprite from "./components/CatSprite";
@@ -19,17 +19,25 @@ export default function RootLayout({ children }) {
   const [showSecretModal, setShowSecretModal] = useState(false);
   const [isAdminMode, setIsAdminMode] = useState(false);
 
+  // Load admin mode from localStorage on mount
+  useEffect(() => {
+    const savedAdminMode = localStorage.getItem('isAdminMode') === 'true';
+    setIsAdminMode(savedAdminMode);
+  }, []);
+
   const handleSecretTrigger = () => {
     setShowSecretModal(true);
   };
 
   const handleVerified = () => {
     setIsAdminMode(true);
+    localStorage.setItem('isAdminMode', 'true');
     setShowSecretModal(false);
   };
 
   const exitAdminMode = () => {
     setIsAdminMode(false);
+    localStorage.removeItem('isAdminMode');
   };
 
   return (
