@@ -1,6 +1,11 @@
 import Link from 'next/link';
 import Image from 'next/image';
 
+export const metadata = {
+  title: "About - Yara Kemeh | Portfolio",
+  description: "Learn about Yara Kemeh - Full-stack developer passionate about creating innovative solutions",
+};
+
 export default function About() {
   return (
     <section>
@@ -18,6 +23,7 @@ export default function About() {
         </div>
         <div>
           <h1 style={{margin:0,fontSize:'2.5rem',color:'var(--color-text-light)',background:'linear-gradient(135deg, #FAF5FF, #E9D5FF, #D8B4FE)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text'}}>About Me</h1>
+          <h2 id="yara-kemeh-target" style={{marginTop:'0.5rem',fontSize:'1.8rem',color:'var(--color-accent)',fontWeight:'600'}}>Yara Kemeh</h2>
           <p style={{marginTop:'1rem',fontSize:'1.15rem',color:'var(--color-text)',opacity:0.9,maxWidth:'700px',margin:'1rem auto 0'}}>Full-stack developer passionate about creating innovative solutions that blend cutting-edge technology with intuitive user experiences.</p>
         </div>
       </div>

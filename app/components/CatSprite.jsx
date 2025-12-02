@@ -23,12 +23,15 @@ export default function CatSprite({
   scale = 1,
   className = "",
   style = {},
+  onSecretTrigger = null,
+  isAdminMode = false, // Add prop to know if already in admin mode
 }) {
   const spriteRef = useRef(null);
   const [currentAnimation, setCurrentAnimation] = useState(animation);
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isOverTarget, setIsOverTarget] = useState(false);
 
   const anim = typeof currentAnimation === "string" ? CAT_ANIMATIONS[currentAnimation] : currentAnimation;
   const frames = anim?.frames ?? 4;
@@ -60,14 +63,67 @@ export default function CatSprite({
 
   const handleMouseMove = (e) => {
     if (!isDragging) return;
-    setPosition({
+    
+    const newPosition = {
       x: e.clientX - dragOffset.x,
       y: e.clientY - dragOffset.y
+    };
+    
+    setPosition(newPosition);
+    
+    // Check if currently over target while dragging
+    const mouseX = e.clientX;
+    const mouseY = e.clientY;
+    const elements = document.elementsFromPoint(mouseX, mouseY);
+    
+    const yaraElement = elements.find(el => {
+      // First check if it's the specific target element
+      if (el.id === 'yara-kemeh-target') return true;
+      
+      // Fallback to exact text matching
+      const text = (el.textContent || el.innerText || '').trim().toLowerCase();
+      return text === 'yara kemeh';
     });
+    
+    setIsOverTarget(!!yaraElement);
   };
 
-  const handleMouseUp = () => {
+  const handleMouseUp = (e) => {
+    if (isDragging && onSecretTrigger && !isAdminMode) {
+      // Only check for secret trigger if not already in admin mode
+      const mouseX = e.clientX;
+      const mouseY = e.clientY;
+      
+      // Check if mouse is released on "Yara Kemeh" text
+      const elements = document.elementsFromPoint(mouseX, mouseY);
+      
+      // Look for exact "Yara Kemeh" text match - be very specific
+      const yaraElement = elements.find(el => {
+        // First check if it's the specific target element
+        if (el.id === 'yara-kemeh-target') return true;
+        
+        // Fallback to text matching for exact content
+        const text = (el.textContent || el.innerText || '').trim().toLowerCase();
+        return text === 'yara kemeh';
+      });
+      
+      console.log('Mouse released at:', mouseX, mouseY);
+      console.log('Elements found:', elements.map(el => ({
+        tagName: el.tagName,
+        text: (el.textContent || '').trim().substring(0, 30),
+        matches: (el.textContent || '').trim().toLowerCase() === 'yara kemeh'
+      })));
+      
+      if (yaraElement) {
+        console.log('✅ Secret trigger activated! Cat dropped on Yara Kemeh');
+        onSecretTrigger();
+      } else {
+        console.log('❌ Cat not dropped on Yara Kemeh text');
+      }
+    }
+    
     setIsDragging(false);
+    setIsOverTarget(false);
   };
 
   useEffect(() => {
@@ -79,7 +135,7 @@ export default function CatSprite({
         document.removeEventListener('mouseup', handleMouseUp);
       };
     }
-  }, [isDragging, dragOffset]);
+  }, [isDragging, dragOffset, onSecretTrigger]);
 
   return (
     <div
@@ -105,6 +161,8 @@ export default function CatSprite({
         cursor: isDragging ? 'grabbing' : 'grab',
         zIndex: isDragging ? 1000 : 'auto',
         userSelect: 'none',
+        filter: isOverTarget && isDragging ? 'drop-shadow(0 0 20px #A855F7) brightness(1.2)' : 'none',
+        transition: 'filter 0.2s ease',
         ...style,
       }}
     />

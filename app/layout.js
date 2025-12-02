@@ -1,42 +1,112 @@
-export const metadata = {
-  title: "Portfolio API",
-  description: "Showcase Express - Portfolio API with Next.js Routes + Database",
-};
-
+"use client";
+import { useState, createContext, useContext } from 'react';
 import './globals.css';
 import Link from 'next/link';
 import CatSprite from "./components/CatSprite";
+import SecretModal from "./components/SecretModal";
+
+const AdminContext = createContext();
+
+export const useAdmin = () => {
+  const context = useContext(AdminContext);
+  if (!context) {
+    throw new Error('useAdmin must be used within AdminProvider');
+  }
+  return context;
+};
 
 export default function RootLayout({ children }) {
+  const [showSecretModal, setShowSecretModal] = useState(false);
+  const [isAdminMode, setIsAdminMode] = useState(false);
+
+  const handleSecretTrigger = () => {
+    setShowSecretModal(true);
+  };
+
+  const handleVerified = () => {
+    setIsAdminMode(true);
+    setShowSecretModal(false);
+  };
+
+  const exitAdminMode = () => {
+    setIsAdminMode(false);
+  };
+
   return (
     <html lang="en">
+      <head>
+        <title>Portfolio API - Showcase Express</title>
+        <meta name="description" content="Showcase Express - Portfolio API with Next.js Routes + Database" />
+      </head>
       <body>
-
-        <div className="page-root">
-          <header className="site-header">
-            <div className="site-header-inner">
-              <div className="brand-with-sprite">
-                <div className="cat-abs-wrapper">
-                  <CatSprite frameSize={32} fps={7} scale={1.5} className="cat-left" />
+        <AdminContext.Provider value={{ isAdminMode, exitAdminMode }}>
+          <div className="page-root">
+            <header className="site-header">
+              <div className="site-header-inner">
+                <div className="brand-with-sprite">
+                  <div className="cat-abs-wrapper">
+                    <CatSprite 
+                      frameSize={32} 
+                      fps={7} 
+                      scale={1.5} 
+                      className="cat-left"
+                      onSecretTrigger={handleSecretTrigger}
+                      isAdminMode={isAdminMode}
+                    />
+                  </div>
+                  <Link href="/" className="brand">Showcase Express</Link>
                 </div>
-                <Link href="/" className="brand">Showcase Express</Link>
+                <nav className="site-nav">
+                  <Link href="/about" className="nav-link">About</Link>
+                  <Link href="/projects" className="nav-link">Projects</Link>
+                  <Link href="/contact" className="nav-link">Contact</Link>
+                  {isAdminMode && (
+                    <button 
+                      onClick={exitAdminMode}
+                      className="nav-link admin-exit"
+                      style={{
+                        background: 'linear-gradient(135deg, #A855F7, #C084FC)',
+                        border: 'none',
+                        borderRadius: '6px',
+                        padding: '0.5rem 1rem',
+                        fontSize: '0.9rem',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Exit Admin 👑
+                    </button>
+                  )}
+                </nav>
               </div>
-              <nav className="site-nav">
-                <Link href="/about" className="nav-link">About</Link>
-                <Link href="/projects" className="nav-link">Projects</Link>
-                <Link href="/contact" className="nav-link">Contact</Link>
-              </nav>
-            </div>
-          </header>
+              {isAdminMode && (
+                <div style={{
+                  background: 'linear-gradient(135deg, #A855F7, #C084FC)',
+                  color: 'white',
+                  padding: '0.5rem',
+                  textAlign: 'center',
+                  fontSize: '0.9rem',
+                  fontWeight: '600'
+                }}>
+                  👑 Admin Mode Active - You can now add and delete projects
+                </div>
+              )}
+            </header>
 
-          <main className="container">{children}</main>
+            <main className="container">{children}</main>
 
-          <footer className="site-footer" id="contact">
-            <div className="site-footer-inner">
-              <p>© {new Date().getFullYear()} Showcase Express — Built with Next.js</p>
-            </div>
-          </footer>
-        </div>
+            <footer className="site-footer" id="contact">
+              <div className="site-footer-inner">
+                <p>© {new Date().getFullYear()} Showcase Express — Built with Next.js</p>
+              </div>
+            </footer>
+          </div>
+
+          <SecretModal
+            isOpen={showSecretModal}
+            onClose={() => setShowSecretModal(false)}
+            onVerified={handleVerified}
+          />
+        </AdminContext.Provider>
       </body>
     </html>
   );

@@ -22,3 +22,25 @@ export async function GET(request, { params }) {
     return new Response(JSON.stringify({ message: 'Failed to fetch project' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
   }
 }
+
+export async function DELETE(request, { params }) {
+  const id = Number(params.id);
+  if (Number.isNaN(id)) {
+    return new Response(JSON.stringify({ message: 'Invalid id' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+  }
+
+  try {
+    // Check if project exists
+    const existingProject = await prisma.project.findUnique({ where: { id } });
+    if (!existingProject) {
+      return new Response(JSON.stringify({ message: 'Project not found' }), { status: 404, headers: { 'Content-Type': 'application/json' } });
+    }
+
+    await prisma.project.delete({ where: { id } });
+    
+    return new Response(JSON.stringify({ message: 'Project deleted successfully' }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+  } catch (err) {
+    console.error('DELETE /api/projects/[id] error', err);
+    return new Response(JSON.stringify({ message: 'Failed to delete project' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+  }
+}
