@@ -12,18 +12,15 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body>
 
-         {/* 🔥 Global Sprite (stays on every page) */}
-        <CatSprite
-          frameWidth={64}
-          frameHeight={64}
-          steps={8}
-          fps={10}
-        />
-        
         <div className="page-root">
           <header className="site-header">
             <div className="site-header-inner">
-              <Link href="/" className="brand">Showcase Express</Link>
+              <div className="brand-with-sprite">
+                <div className="cat-abs-wrapper">
+                  <CatSprite animation="walk" frameSize={32} fps={8} scale={1.5} className="cat-left" />
+                </div>
+                <Link href="/" className="brand">Showcase Express</Link>
+              </div>
               <nav className="site-nav">
                 <Link href="/about" className="nav-link">About</Link>
                 <Link href="/projects" className="nav-link">Projects</Link>

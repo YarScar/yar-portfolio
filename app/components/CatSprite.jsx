@@ -15,11 +15,13 @@ export const CAT_ANIMATIONS = {
 };
 
 export default function CatSprite({
-  animation = "idleSit",
+  animation = "walk",
   frameSize = 32,
   fps = 8,
   loop = true,
   scale = 1,
+  className = "",
+  style = {},
 }) {
   const spriteRef = useRef(null);
 
@@ -46,13 +48,18 @@ export default function CatSprite({
     <div
       ref={spriteRef}
       aria-label={`cat-sprite-${animation}`}
+      className={className}
       style={{
-        width: frameSize * scale,
-        height: frameSize * scale,
+        width: frameSize,
+        height: frameSize,
+        transform: `scale(${scale})`,
+        transformOrigin: 'left center',
+        display: 'inline-block',
         backgroundImage: "url('/assets/CatSprite.png')",
         backgroundRepeat: "no-repeat",
         imageRendering: "pixelated",
         backgroundSize: "auto",
+        ...style,
       }}
     />
   );
