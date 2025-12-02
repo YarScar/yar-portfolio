@@ -155,7 +155,7 @@ body::after{
 .brand-with-sprite{display:flex;align-items:center;gap:0.6rem;position:relative}
 .brand-with-sprite .brand{display:inline-flex;align-items:center}
 .cat-left{margin-right:0.5rem;transform:translateY(2px)}
-.cat-abs-wrapper{position:absolute;left:-30px;top:15%;transform:translateY(-50%);pointer-events:auto;z-index:10}
+.cat-abs-wrapper{position:absolute;left:-30px;top:10%;transform:translateY(-50%);pointer-events:auto;z-index:10}
 .cat-floating{position:fixed;left:16px;top:16px;z-index:999;pointer-events:auto}
 .brand{
   color:var(--color-text-light);

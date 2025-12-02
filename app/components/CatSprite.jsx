@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export const CAT_ANIMATIONS = {
   idleSit: { row: 0, frames: 4 },
@@ -15,17 +15,19 @@ export const CAT_ANIMATIONS = {
 };
 
 export default function CatSprite({
-  animation = "walk",
+  animation = "crawlStretch",
+  hoverAnimation = "walk",
   frameSize = 32,
-  fps = 8,
+  fps = 2,
   loop = true,
   scale = 1,
   className = "",
   style = {},
 }) {
   const spriteRef = useRef(null);
+  const [currentAnimation, setCurrentAnimation] = useState(animation);
 
-  const anim = typeof animation === "string" ? CAT_ANIMATIONS[animation] : animation;
+  const anim = typeof currentAnimation === "string" ? CAT_ANIMATIONS[currentAnimation] : currentAnimation;
   const frames = anim?.frames ?? 4;
   const row = anim?.row ?? 0;
 
@@ -42,13 +44,15 @@ export default function CatSprite({
 
     const interval = setInterval(tick, 1000 / fps);
     return () => clearInterval(interval);
-  }, [row, frames, fps, frameSize, loop]);
+  }, [row, frames, fps, frameSize, loop, currentAnimation]);
 
   return (
     <div
       ref={spriteRef}
-      aria-label={`cat-sprite-${animation}`}
+      aria-label={`cat-sprite-${currentAnimation}`}
       className={className}
+      onMouseEnter={() => setCurrentAnimation(hoverAnimation)}
+      onMouseLeave={() => setCurrentAnimation("idleSit")}
       style={{
         width: frameSize,
         height: frameSize,

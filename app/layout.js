@@ -17,7 +17,7 @@ export default function RootLayout({ children }) {
             <div className="site-header-inner">
               <div className="brand-with-sprite">
                 <div className="cat-abs-wrapper">
-                  <CatSprite animation="walk" frameSize={32} fps={8} scale={1.5} className="cat-left" />
+                  <CatSprite frameSize={32} fps={7} scale={1.5} className="cat-left" />
                 </div>
                 <Link href="/" className="brand">Showcase Express</Link>
               </div>
