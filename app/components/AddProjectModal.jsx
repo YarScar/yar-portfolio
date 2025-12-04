@@ -5,6 +5,7 @@ export default function AddProjectModal({ isOpen, onClose, onProjectAdded }) {
   const [projectData, setProjectData] = useState({
     title: "",
     description: "",
+    long: "",
     url: "",
     image: "",
     tags: ""
@@ -88,6 +89,7 @@ export default function AddProjectModal({ isOpen, onClose, onProjectAdded }) {
         body: JSON.stringify({
           title: projectData.title,
           description: projectData.description,
+          long: projectData.long || null,
           url: projectData.url || null,
           image: imageUrl || null,
           tags: projectData.tags ? projectData.tags.split(',').map(tag => tag.trim()).filter(tag => tag) : []
@@ -105,6 +107,7 @@ export default function AddProjectModal({ isOpen, onClose, onProjectAdded }) {
       setProjectData({
         title: "",
         description: "",
+        long: "",
         url: "",
         image: "",
         tags: ""
@@ -125,6 +128,7 @@ export default function AddProjectModal({ isOpen, onClose, onProjectAdded }) {
     setProjectData({
       title: "",
       description: "",
+      long: "",
       url: "",
       image: "",
       tags: ""
@@ -265,6 +269,35 @@ export default function AddProjectModal({ isOpen, onClose, onProjectAdded }) {
               required
               placeholder="Brief description of what this project does..."
               rows={3}
+              style={{
+                width: '100%',
+                padding: '0.8rem',
+                borderRadius: '10px',
+                border: '2px solid rgba(168,85,247,0.3)',
+                background: 'rgba(255,255,255,0.05)',
+                color: 'var(--color-text)',
+                fontSize: '1rem',
+                resize: 'vertical',
+                fontFamily: 'inherit'
+              }}
+            />
+          </div>
+
+          <div>
+            <label style={{
+              color: 'var(--color-text-light)',
+              fontSize: '0.9rem',
+              fontWeight: '600',
+              marginBottom: '0.5rem',
+              display: 'block'
+            }}>
+              Detailed Description
+            </label>
+            <textarea
+              value={projectData.long}
+              onChange={(e) => handleInputChange('long', e.target.value)}
+              placeholder="More detailed write-up or case study about this project (optional)"
+              rows={5}
               style={{
                 width: '100%',
                 padding: '0.8rem',

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import prisma from '../../../lib/prisma';
 
 const sampleProjects = [
   { id: 1, title: 'Najah', description: 'A React-based study app that brings together task management, a customizable Pomodoro timer, AI homework help, and lofi music in a smooth, productivity-focused workspace.', long: 'Najah combines essential productivity tools into one seamless experience: manage your tasks with a clean to-do interface, stay focused with a customizable Pomodoro timer, get instant AI-powered homework help using the Gemini API, and set the mood with integrated lofi music. Built with React and Vite for optimal performance.', tags: ['Vite','React', 'Gemini API'], url: 'https://404sleepnotfound.vercel.app/', image: '/images/najah-logo.png' },
@@ -9,16 +10,18 @@ const sampleProjects = [
 
 export default async function ProjectDetailPage({ params }) {
   const id = Number(params.id);
-  let project = null;
 
+  // Server-side: fetch directly from the database so `long` is available.
+  let project = null;
   try {
-    const res = await fetch(`/api/projects/${id}`, { cache: 'no-store' });
-    if (res.ok) project = await res.json();
+    project = await prisma.project.findUnique({ where: { id } });
   } catch (err) {
-    // ignore and fall back to sample data
+    console.error('Error fetching project from DB:', err);
   }
 
-  if (!project) project = sampleProjects.find((p) => p.id === id) || null;
+  if (!project) {
+    project = sampleProjects.find((p) => p.id === id) || null;
+  }
 
   if (!project) {
     return (
