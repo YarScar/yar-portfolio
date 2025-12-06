@@ -176,6 +176,27 @@ body::after{
 }
 .nav-link:hover{color:var(--color-text-light);box-shadow:0 6px 20px rgba(167,139,250,0.08);transform:translateY(-2px)}
 
+/* Admin UI */
+.admin-exit{
+  background: linear-gradient(135deg, #A855F7, #C084FC);
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  color: var(--color-text-light);
+}
+.admin-exit:hover{filter:brightness(1.05)}
+
+.admin-banner{
+  background: linear-gradient(135deg, #A855F7, #C084FC);
+  color: white;
+  padding: 0.5rem;
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
 /* Hero */
 .hero{
   display:flex;

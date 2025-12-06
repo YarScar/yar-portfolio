@@ -69,17 +69,9 @@ export default function RootLayout({ children }) {
                   <Link href="/projects" className="nav-link">Projects</Link>
                   <Link href="/contact" className="nav-link">Contact</Link>
                   {isAdminMode && (
-                    <button 
+                    <button
                       onClick={exitAdminMode}
                       className="nav-link admin-exit"
-                      style={{
-                        background: 'linear-gradient(135deg, #A855F7, #C084FC)',
-                        border: 'none',
-                        borderRadius: '6px',
-                        padding: '0.5rem 1rem',
-                        fontSize: '0.9rem',
-                        cursor: 'pointer'
-                      }}
                     >
                       Exit Admin 👑
                     </button>
@@ -87,14 +79,7 @@ export default function RootLayout({ children }) {
                 </nav>
               </div>
               {isAdminMode && (
-                <div style={{
-                  background: 'linear-gradient(135deg, #A855F7, #C084FC)',
-                  color: 'white',
-                  padding: '0.5rem',
-                  textAlign: 'center',
-                  fontSize: '0.9rem',
-                  fontWeight: '600'
-                }}>
+                <div className="admin-banner">
                   👑 Admin Mode Active - You can now add and delete projects
                 </div>
               )}
