@@ -1,0 +1,63 @@
+.site-header{
+  backdrop-filter: blur(12px);
+  background: linear-gradient(180deg, rgba(76,29,149,0.35), rgba(15,10,31,0.25));
+  border-bottom: 1px solid rgba(168,85,247,0.15);
+  box-shadow: 0 4px 30px rgba(168,85,247,0.1);
+}
+.site-header-inner{
+  max-width:1200px;
+  margin:0 auto;
+  padding:1rem 1.5rem;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.brand-with-sprite{display:flex;align-items:center;gap:0.6rem;position:relative}
+.brand-with-sprite .brand{display:inline-flex;align-items:center}
+.cat-left{margin-right:0.5rem;transform:translateY(2px)}
+.cat-abs-wrapper{position:absolute;left:-30px;top:10%;transform:translateY(-50%);pointer-events:auto;z-index:10}
+.cat-floating{position:fixed;left:16px;top:16px;z-index:999;pointer-events:auto}
+.brand{
+  color:var(--color-text-light);
+  text-decoration:none;
+  font-weight:700;
+  font-size:1.15rem;
+  letter-spacing:0.2px;
+  padding:0.25rem 0.5rem;
+  border-radius:6px;
+}
+.site-nav{display:flex;gap:0.75rem;align-items:center}
+.nav-link{
+  color:var(--color-text);
+  text-decoration:none;
+  padding:0.5rem 0.75rem;
+  border-radius:6px;
+  transition:all 220ms cubic-bezier(.2,.9,.2,1);
+}
+.nav-link:hover{color:var(--color-text-light);box-shadow:0 6px 20px rgba(167,139,250,0.08);transform:translateY(-2px)}
+
+/* Admin UI */
+.admin-exit{
+  background: linear-gradient(135deg, #A855F7, #C084FC);
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  color: var(--color-text-light);
+}
+.admin-exit:hover{filter:brightness(1.05)}
+
+.admin-banner{
+  background: linear-gradient(135deg, #A855F7, #C084FC);
+  color: white;
+  padding: 0.5rem;
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.project-logo:hover{
+  transform:scale(1.05);
+  box-shadow:0 12px 40px rgba(168,85,247,0.3);
+}

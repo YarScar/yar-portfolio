@@ -1,0 +1,6 @@
+.cube-3d { position: relative; transform-style: preserve-3d; transition: transform 0.3s ease; cursor: grab; user-select: none }
+.cube-3d:hover { transform: rotateX(-5deg) rotateY(5deg) translateY(-5px) }
+.cube-3d.dragging { cursor: grabbing; transition: none }
+.cube-3d.releasing { cursor: grab; transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) }
+.cube-3d::before { content: ''; position: absolute; top: 8px; left: 8px; right: -8px; bottom: -8px; background: linear-gradient(135deg, rgba(168,85,247,0.15) 0%, rgba(192,132,252,0.1) 100%); border-radius: inherit; transform: translateZ(-15px); z-index: -1; border: 1px solid rgba(168,85,247,0.3) }
+.cube-3d::after { content: ''; position: absolute; top: 12px; left: 12px; right: -12px; bottom: -12px; background: linear-gradient(135deg, rgba(168,85,247,0.08) 0%, rgba(192,132,252,0.05) 100%); border-radius: inherit; transform: translateZ(-25px); z-index: -2; border: 1px solid rgba(168,85,247,0.2) }

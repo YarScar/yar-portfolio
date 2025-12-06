@@ -1,6 +1,14 @@
 "use client";
 import { useState, createContext, useContext, useEffect } from 'react';
 import './globals.css';
+import '../styles/header.css';
+import '../styles/hero.css';
+import '../styles/buttons.css';
+import '../styles/projects.css';
+import '../styles/tags.css';
+import '../styles/project-detail.css';
+import '../styles/forms.css';
+import '../styles/cube.css';
 import Link from 'next/link';
 import CatSprite from "./components/CatSprite";
 import SecretModal from "./components/SecretModal";
