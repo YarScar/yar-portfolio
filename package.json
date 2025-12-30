@@ -1,8 +1,14 @@
 {
-  "name": "portfolio-api",
+  "name": "yar-portfolio",
   "version": "1.0.0",
   "type": "module",
   "description": "Portfolio API with Next.js Routes + Database Project",
+  "author": "Yara Kemeh <yarascarlet45@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/yar-portfolio.git"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
