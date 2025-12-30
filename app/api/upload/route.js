@@ -1,6 +1,7 @@
-import { writeFile } from 'fs/promises';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
+import { put } from '@vercel/blob';
 import path from 'path';
+import { mkdir, writeFile } from 'fs/promises';
 
 export async function POST(request) {
   try {
@@ -16,25 +17,29 @@ export async function POST(request) {
 
     // Generate a unique filename
     const timestamp = Date.now();
-    const extension = path.extname(file.name);
+    const extension = path.extname(file.name || '') || '';
     const filename = `project-${timestamp}${extension}`;
-    const filepath = path.join(process.cwd(), 'public', 'uploads', filename);
 
-    // Ensure uploads directory exists
-    const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
-    try {
-      await writeFile(path.join(uploadsDir, '.gitkeep'), '');
-    } catch (error) {
-      // Directory might already exist, that's okay
+    // In production (Vercel), use Blob storage for persistence
+    if (process.env.VERCEL || process.env.NODE_ENV === 'production') {
+      try {
+        const blob = await put(`uploads/${filename}`, buffer, {
+          access: 'public',
+          token: process.env.BLOB_READ_WRITE_TOKEN,
+        });
+        return NextResponse.json({ message: 'File uploaded successfully', url: blob.url });
+      } catch (err) {
+        console.error('Vercel Blob upload error:', err);
+        return NextResponse.json({ error: 'Upload failed (blob)' }, { status: 500 });
+      }
     }
 
+    // In local development, write to public/uploads
+    const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+    await mkdir(uploadsDir, { recursive: true });
+    const filepath = path.join(uploadsDir, filename);
     await writeFile(filepath, buffer);
-    
-    // Return the public URL
-    return NextResponse.json({ 
-      message: 'File uploaded successfully',
-      url: `/uploads/${filename}`
-    });
+    return NextResponse.json({ message: 'File uploaded successfully', url: `/uploads/${filename}` });
   } catch (error) {
     console.error('Error uploading file:', error);
     return NextResponse.json({ error: 'Error uploading file' }, { status: 500 });
