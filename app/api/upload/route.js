@@ -26,6 +26,7 @@ export async function POST(request) {
         const blob = await put(`uploads/${filename}`, buffer, {
           access: 'public',
           token: process.env.BLOB_READ_WRITE_TOKEN,
+          contentType: file.type || 'application/octet-stream',
         });
         return NextResponse.json({ message: 'File uploaded successfully', url: blob.url });
       } catch (err) {
