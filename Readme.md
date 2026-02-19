@@ -1,4 +1,4 @@
-# Yara Portfolio
+## Yara Portfolio
 
 A polished, full-stack portfolio showcasing projects, interactive UI, and a production-ready API backed by PostgreSQL.
 
