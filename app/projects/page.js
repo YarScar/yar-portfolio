@@ -9,7 +9,7 @@ import EditProjectModal from "../components/EditProjectModal";
 const sampleProjects = [
   { id: 1, title: 'Najah', description: 'A React-based study app that brings together task management, a customizable Pomodoro timer, AI homework help, and lofi music in a smooth, productivity-focused workspace.', tags: ['Vite','React', 'Gemini API'], url: 'https://404sleepnotfound.vercel.app/', image: '/images/najah-logo.png' },
   { id: 2, title: 'Immigo', description: 'An immigration support platform connecting immigrants with resources, legal assistance, and community support services.', tags: ['Next.js','React','Prisma'], url: 'https://immigo-pi.vercel.app/', image: '/images/immigo-logo.png' },
-  { id: 3, title: 'Agentic Data Quality Analysis Platform', description: 'AI-powered data quality analysis platform that helps business users understand and improve dataset quality with intelligent insights.', tags: ['Next.js','React','OpenAI API','Chart.js'], url: 'https://data-analysis-tutorial-three.vercel.app/', image: '/images/data-analysis-logo.png' }
+  { id: 3, title: 'Donor CRM', description: 'AI-powered nonprofit CRM that centralizes donor management, streamlines fundraising operations, and provides intelligent insights through responsible AI integration.', tags: ['Next.js 14', 'React', 'Prisma ORM', 'PostgreSQL', 'OpenAI API', 'Recharts', 'Role-Based Access Control', 'Custom CSS', 'Vercel Deployment'], url: 'https://donor-connect-crm.vercel.app/', image: '/images/data-analysis-logo.png' }
 ];
 
 export default function ProjectsPage() {
