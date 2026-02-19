@@ -6,14 +6,8 @@ import AdminProjectsWrapper from "../components/AdminProjectsWrapper";
 import AdminDeleteOverlay from "../components/AdminDeleteOverlay";
 import EditProjectModal from "../components/EditProjectModal";
 
-const sampleProjects = [
-  { id: 1, title: 'Najah', description: 'A React-based study app that brings together task management, a customizable Pomodoro timer, AI homework help, and lofi music in a smooth, productivity-focused workspace.', tags: ['Vite','React', 'Gemini API'], url: 'https://404sleepnotfound.vercel.app/', image: '/images/najah-logo.png' },
-  { id: 2, title: 'Immigo', description: 'An immigration support platform connecting immigrants with resources, legal assistance, and community support services.', tags: ['Next.js','React','Prisma'], url: 'https://immigo-pi.vercel.app/', image: '/images/immigo-logo.png' },
-  { id: 3, title: 'Donor CRM', description: 'AI-powered nonprofit CRM that centralizes donor management, streamlines fundraising operations, and provides intelligent insights through responsible AI integration.', tags: ['Next.js 14', 'React', 'Prisma ORM', 'PostgreSQL', 'OpenAI API', 'Recharts', 'Role-Based Access Control', 'Custom CSS', 'Vercel Deployment'], url: 'https://donor-connect-crm.vercel.app/', image: '/images/data-analysis-logo.png' }
-];
-
 export default function ProjectsPage() {
-  const [projects, setProjects] = useState(sampleProjects);
+  const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingProject, setEditingProject] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -161,31 +155,20 @@ export default function ProjectsPage() {
 
   const fetchProjects = async () => {
     try {
-      // Try to fetch from database first
       const res = await fetch('/api/projects', { 
         cache: 'no-store'
       });
       
       if (res.ok) {
         const dbProjects = await res.json();
-        // Combine database projects with sample projects, ensuring sample projects show first
-        const combinedProjects = [...sampleProjects];
-        
-        // Add database projects that aren't already in sample projects
-        dbProjects.forEach(dbProject => {
-          const exists = sampleProjects.find(sample => sample.id === dbProject.id);
-          if (!exists) {
-            combinedProjects.push(dbProject);
-          }
-        });
-        
-        setProjects(combinedProjects);
+        setProjects(dbProjects);
       } else {
-        setProjects(sampleProjects);
+        console.error('Failed to fetch projects from database');
+        setProjects([]);
       }
     } catch (err) {
-      console.log('Database fetch failed, using sample projects:', err.message);
-      setProjects(sampleProjects);
+      console.error('Database fetch failed:', err.message);
+      setProjects([]);
     } finally {
       setLoading(false);
     }

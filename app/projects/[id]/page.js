@@ -2,25 +2,15 @@ import Link from "next/link";
 import Image from "next/image";
 import prisma from '../../../lib/prisma';
 
-const sampleProjects = [
-  { id: 1, title: 'Najah', description: 'A React-based study app that brings together task management, a customizable Pomodoro timer, AI homework help, and lofi music in a smooth, productivity-focused workspace.', long: 'Najah combines essential productivity tools into one seamless experience: manage your tasks with a clean to-do interface, stay focused with a customizable Pomodoro timer, get instant AI-powered homework help using the Gemini API, and set the mood with integrated lofi music. Built with React and Vite for optimal performance.', tags: ['Vite','React', 'Gemini API'], url: 'https://404sleepnotfound.vercel.app/', image: '/images/najah-logo.png' },
-  { id: 2, title: 'Immigo', description: 'An immigration support platform connecting immigrants with resources, legal assistance, and community support services.', long: 'Immigo is a comprehensive platform designed to help immigrants navigate their journey with confidence. The application connects users with vital resources including legal assistance, community support services, educational materials, and local immigrant support organizations. Built with Next.js and Prisma, it features a user-friendly interface that breaks down complex immigration processes into manageable steps.', tags: ['Next.js','React','Prisma'], url: 'https://immigo-pi.vercel.app/', image: '/images/immigo-logo.png' },
-  { id: 3, title: 'Agentic Data Quality Analysis Platform', description: 'AI-powered data quality analysis platform that helps business users understand and improve dataset quality with intelligent insights.', long: 'An intelligent data quality analysis platform built with Next.js that empowers business users and data analysts to understand their datasets without deep technical expertise. Features automated quality analysis for CSV, JSON, and Excel files, identifying missing values, outliers, and inconsistencies. Integrates OpenAI API for natural language explanations of data quality issues, interactive Chart.js dashboards for visual metrics, and professional report generation. Built with React 18, Papa Parse for data processing, and client-side storage for security.', tags: ['Next.js','React','OpenAI API','Chart.js'], url: 'https://data-analysis-tutorial-three.vercel.app/', image: '/images/data-analysis-logo.png' }
-];
-
 export default async function ProjectDetailPage({ params }) {
   const id = Number(params.id);
 
-  // Server-side: fetch directly from the database so `long` is available.
+  // Server-side: fetch directly from the database
   let project = null;
   try {
     project = await prisma.project.findUnique({ where: { id } });
   } catch (err) {
     console.error('Error fetching project from DB:', err);
-  }
-
-  if (!project) {
-    project = sampleProjects.find((p) => p.id === id) || null;
   }
 
   if (!project) {
