@@ -1,24 +1,29 @@
-## Yara Portfolio
+# Yara Portfolio
 
-A polished, full-stack portfolio showcasing projects, interactive UI, and a production-ready API backed by PostgreSQL.
+A polished, full-stack portfolio showcasing projects, interactive UI, and a production-ready API backed by PostgreSQL, now fully containerized with Docker for easy local setup.
 
 ## Overview
 - Modern Next.js 14 App Router application with a clean, responsive UI.
 - Fully functional CRUD API for projects with Prisma + PostgreSQL.
 - File uploads pipeline storing assets to `public/uploads` for immediate use.
 - Contact form persistence for inbound messages and lead tracking.
+- **Dockerized environment:** app and database run in isolated containers for consistent builds.
+- **Future-ready for hosted DB:** can connect to a Neon PostgreSQL instance.
 
 ## Highlights
 - Robust project management: create, update, delete, and view project details.
 - Employer-friendly UX: interactive 3D-inspired cards and refined visual design.
 - Production-focused data layer: Prisma 7 on `@prisma/adapter-pg` via `DATABASE_URL`.
+- **Containerized development:** Dockerfile, docker-compose.yml, and .dockerignore included.
 - Fast tests with Vitest; scripts for development, build, and start are ready.
+- **Supports hosted databases:** ready for Neon or other PostgreSQL providers.
 
 ## Tech Stack
 - Frontend: Next.js 14, React 18
 - Data: Prisma ORM, PostgreSQL (via `@prisma/adapter-pg`)
 - Testing: Vitest
 - UI/3D: CSS transforms with optional three.js utilities in components
+- Containerization: Docker + Docker Compose
 
 ## Architecture
 - Pages: About (primary landing), Projects list, Project detail, Contact.
@@ -26,6 +31,10 @@ A polished, full-stack portfolio showcasing projects, interactive UI, and a prod
 - API: Next.js Route Handlers under `app/api/*`.
 - Data Layer: Prisma client configured with `DATABASE_URL` (Postgres).
 - Assets: `public/uploads` for user-uploaded files.
+- **Docker Setup:**  
+  - `Dockerfile` builds the Next.js app using a multistage build.  
+  - `docker-compose.yml` orchestrates app + database, with restart policies and healthchecks.  
+  - `.dockerignore` reduces build context and speeds up container builds.
 
 ## Data Model
 `Project`
@@ -55,23 +64,9 @@ A polished, full-stack portfolio showcasing projects, interactive UI, and a prod
 - `POST /api/upload` — multipart upload; returns `{ url: "/uploads/<file>" }`
 - `GET /api/dev/projects` — dev utility returning `{ ok, count, projects }`
 
-## Environment
-- Required: `DATABASE_URL` in `.env` (PostgreSQL connection string)
-- `.gitignore` excludes env and build artifacts
+## Running Locally with Docker
 
-## Development & Testing
-- Scripts: `dev`, `build`, `start`, `test`
-- ORM: Prisma 7 with Postgres; seed and health-check scripts in `scripts/`
-- Testing: Vitest suite for API/DB behavior in `tests/`
+1. Build and start all services (app + database):
 
-## Security & Reliability
-- Validation on API inputs; safe handling of optional fields.
-- Uploads stored under `public/uploads` with unique filenames.
-- Environment-configured DB; no secrets committed.
-
-## License
-MIT — see `LICENSE`.
-
-## Contact
-Author: Yara Kemeh — yarascarlet45@gmail.com
-Portfolio projects and case studies available in the Projects section.
+```bash
+docker compose up -d --build
