@@ -1,0 +1,90 @@
+# CI Pipeline - runs automatically when you push code or make pull requests
+name: CI Pipeline
+
+# When to run this workflow
+on:
+  push:
+    branches: [ main, develop ]  # Run on pushes to main and develop
+  pull_request:
+    branches: [ main ]           # Run on pull requests to main
+
+# Main CI job that tests everything
+jobs:
+  test:
+    name: Build and Test
+    runs-on: ubuntu-latest       # Use Ubuntu server (free on GitHub)
+    
+    # Set up PostgreSQL database service (like your docker-compose)
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: testdb
+        # Health check to make sure DB is ready before tests
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    # Environment variables for this job
+    env:
+      DATABASE_URL: postgresql://postgres:password@localhost:5432/testdb
+
+    steps:
+      # Step 1: Download your code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Install Node.js (same version as your Dockerfile)
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'           # Cache dependencies for faster builds
+
+      # Step 3: Install all dependencies
+      - name: Install dependencies
+        run: npm ci              # Like npm install but faster for CI
+
+      # Step 4: Generate Prisma client (your postinstall does this too)
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      # Step 5: Set up database schema
+      - name: Run database migrations
+        run: npx prisma migrate deploy
+
+      # Step 6: Add sample data to test database
+      - name: Seed test database
+        run: npx prisma db seed
+
+      # Step 7: Build your Next.js app
+      - name: Build application
+        run: npm run build
+
+      # Step 8: Run all your tests
+      - name: Run tests
+        run: npm test
+
+  # Optional: Check for security vulnerabilities
+  security:
+    name: Security Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          
+      # Check for known security issues in dependencies
+      - name: Security audit
+        run: npm audit --audit-level moderate
