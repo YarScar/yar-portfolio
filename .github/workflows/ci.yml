@@ -30,7 +30,7 @@ jobs:
 
     # Environment variables for Prisma
     env:
-      DATABASE_URL: postgresql://postgres:password@postgres:5432/testdb
+      DATABASE_URL: postgresql://postgres:password@localhost:5432/testdb
 
     steps:
       # Step 1: Checkout code
