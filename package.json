@@ -10,23 +10,21 @@
     "url": "https://github.com/yourusername/yar-portfolio.git"
   },
   "scripts": {
-  "dev": "next dev",
-  "build": "next build",
-  "start": "next start",
-  "test": "vitest run",
-  "postinstall": "",
-  "prebuild": "npx prisma generate",
-  "seed:local": "ts-node prisma/seed.local.ts",
-  "seed:neon": "node prisma/seed.js"
-},
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test": "vitest run",
+    "postinstall": "",
+    "prebuild": "npx prisma generate"
+  },
   "dependencies": {
     "@prisma/adapter-pg": "^7.0.1",
-    "@prisma/client": "^7.0.1",
+    "@prisma/client": "^7.4.1",
     "@react-three/drei": "^9.88.7",
     "@react-three/fiber": "^8.15.12",
     "@vercel/blob": "^2.0.0",
     "next": "^14.0.0",
-    "prisma": "^7.0.0",
+    "prisma": "^7.4.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "three": "^0.181.2"
