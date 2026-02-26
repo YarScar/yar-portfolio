@@ -1,20 +1,18 @@
-# CI Pipeline - runs automatically when you push code or make pull requests
+# CI Pipeline - Build, Migrate, Seed, Test
 name: CI Pipeline
 
-# When to run this workflow
 on:
   push:
-    branches: [ main, develop ]  # Run on pushes to main and develop
+    branches: [ main, develop ]
   pull_request:
-    branches: [ main ]           # Run on pull requests to main
+    branches: [ main ]
 
-# Main CI job that tests everything
 jobs:
   test:
     name: Build and Test
-    runs-on: ubuntu-latest       # Use Ubuntu server (free on GitHub)
-    
-    # Set up PostgreSQL database service (like your docker-compose)
+    runs-on: ubuntu-latest
+
+    # PostgreSQL service for CI
     services:
       postgres:
         image: postgres:15-alpine
@@ -22,7 +20,6 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: password
           POSTGRES_DB: testdb
-        # Health check to make sure DB is ready before tests
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -31,60 +28,55 @@ jobs:
         ports:
           - 5432:5432
 
-    # Environment variables for this job
+    # Environment variables for Prisma
     env:
-      DATABASE_URL: postgresql://postgres:password@localhost:5432/testdb
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/testdb
 
     steps:
-      # Step 1: Download your code
+      # Step 1: Checkout code
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Step 2: Install Node.js (same version as your Dockerfile)
+      # Step 2: Setup Node.js
       - name: Setup Node.js 20
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'           # Cache dependencies for faster builds
+          cache: 'npm'
 
-      # Step 3: Install all dependencies
+      # Step 3: Install dependencies
       - name: Install dependencies
-        run: npm ci              # Like npm install but faster for CI
+        run: npm ci
 
-      # Step 4: Generate Prisma client (your postinstall does this too)
+      # Step 4: Generate Prisma client
       - name: Generate Prisma client
         run: npx prisma generate
 
-      # Step 5: Set up database schema
-      - name: Run database migrations
+      # Step 5: Run migrations
+      - name: Deploy database migrations
         run: npx prisma migrate deploy
 
-      # Step 6: Add sample data to test database
+      # Step 6: Seed database
       - name: Seed test database
         run: npx prisma db seed
 
-      # Step 7: Build your Next.js app
+      # Step 7: Build application
       - name: Build application
         run: npm run build
 
-      # Step 8: Run all your tests
+      # Step 8: Run tests
       - name: Run tests
         run: npm test
 
-  # Optional: Check for security vulnerabilities
   security:
     name: Security Check
     runs-on: ubuntu-latest
-    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          
-      # Check for known security issues in dependencies
       - name: Security audit
         run: npm audit || true
