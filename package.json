@@ -14,7 +14,7 @@
   "build": "next build",
   "start": "next start",
   "test": "vitest run",
-  "postinstall": "npx prisma generate",
+  "postinstall": "",
   "prebuild": "npx prisma generate",
   "seed:local": "ts-node prisma/seed.local.ts",
   "seed:neon": "node prisma/seed.js"
