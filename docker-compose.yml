@@ -5,9 +5,9 @@ services:
     build:
       context: .
       args:
-        DATABASE_URL: postgresql://postgres:password@db:5432/mydb
+        DCKR_DATABASE_URL: postgresql://postgres:password@db:5432/mydb
     env_file:
-      - .env.docker
+      - .env
     ports:
       - "3000:3000"
     depends_on:
