@@ -1,11 +1,36 @@
+# Node.js dependencies (installed in container)
 node_modules
+
+# Next.js build output
 .next
+out
+
+# Git metadata
 .git
 .gitignore
-Dockerfile
+
+# Docker configs (no need to copy into image)
 docker-compose.yml
+
+# Environment files (keep secrets out of image)
 .env
 .env.local
-.env.* 
+.env.*
+
+# Logs
 npm-debug.log
-README.md
+yarn-debug.log
+yarn-error.log
+
+
+# node_modules
+# .next
+# .git
+# .gitignore
+# Dockerfile
+# docker-compose.yml
+# .env
+# .env.local
+# .env.* 
+# npm-debug.log
+# README.md
