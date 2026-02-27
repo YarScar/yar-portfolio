@@ -14,8 +14,7 @@
     "build": "next build",
     "start": "next start",
     "test": "vitest run",
-    "postinstall": "npx prisma generate",
-    "prebuild": "npx prisma generate"
+    "postinstall": "npx prisma generate"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.0.1",
