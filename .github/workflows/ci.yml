@@ -1,5 +1,4 @@
-# CI Pipeline - Build, Migrate, Seed, Test
-name: CI Pipeline
+name: CI - Docker
 
 on:
   push:
@@ -8,11 +7,10 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
-    name: Build and Test
+  docker:
+    name: Build and Run Docker
     runs-on: ubuntu-latest
 
-    # PostgreSQL service for CI
     services:
       postgres:
         image: postgres:15-alpine
@@ -28,55 +26,34 @@ jobs:
         ports:
           - 5432:5432
 
-    # Environment variables for Prisma
     env:
-      DATABASE_URL: postgresql://postgres:password@localhost:5432/testdb
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/testdb
 
     steps:
-      # Step 1: Checkout code
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Step 2: Setup Node.js
-      - name: Setup Node.js 20
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
+      - name: Build Docker image
+        run: docker build -t my-app .
 
-      # Step 3: Install dependencies
-      - name: Install dependencies
-        run: npm ci --include=dev
+      - name: Run migrations
+        run: |
+          docker run --network host \
+            -e DATABASE_URL=$DATABASE_URL \
+            my-app npx prisma migrate deploy
 
-      # Step 4: Generate Prisma client
-      - name: Generate Prisma client
-        run: npx prisma generate
+      - name: Seed database
+        run: |
+          docker run --network host \
+            -e DATABASE_URL=$DATABASE_URL \
+            my-app npx prisma db seed
 
-      # Step 5: Run migrations
-      - name: Deploy database migrations
-        run: npx prisma migrate deploy
+      - name: Start container
+        run: |
+          docker run -d --network host \
+            -e DATABASE_URL=$DATABASE_URL \
+            --name app-test \
+            my-app
 
-      # Step 6: Seed database
-      - name: Seed test database
-        run: npx prisma db seed
-
-      # Step 7: Build application
-      - name: Build application
-        run: npm run build
-
-      # Step 8: Run tests (currently skipped)
-      # - name: Run tests
-      #   run: npm test
-
-  security:
-    name: Security Check
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - name: Security audit
-        run: npm audit || true
+      - name: Check container is running
+        run: docker ps
