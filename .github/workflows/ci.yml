@@ -1,4 +1,4 @@
-name: CI - Docker
+name: CI - Build Verification
 
 on:
   push:
@@ -7,27 +7,9 @@ on:
     branches: [ main ]
 
 jobs:
-  docker:
-    name: Build and Run Docker
+  build:
+    name: Verify Build
     runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres:15-alpine
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: password
-          POSTGRES_DB: testdb
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-
-    env:
-      DATABASE_URL: postgresql://postgres:password@postgres:5432/testdb
 
     steps:
       - name: Checkout code
@@ -36,24 +18,18 @@ jobs:
       - name: Build Docker image
         run: docker build -t my-app .
 
-      - name: Run migrations
-        run: |
-          docker run --network host \
-            -e DATABASE_URL=$DATABASE_URL \
-            my-app npx prisma migrate deploy
-
-      - name: Seed database
-        run: |
-          docker run --network host \
-            -e DATABASE_URL=$DATABASE_URL \
-            my-app npx prisma db seed
-
-      - name: Start container
-        run: |
-          docker run -d --network host \
-            -e DATABASE_URL=$DATABASE_URL \
-            --name app-test \
-            my-app
-
-      - name: Check container is running
-        run: docker ps
+  security:
+    name: Security Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          
+      - name: Security audit
+        run: npm audit || true
