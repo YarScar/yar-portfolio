@@ -1,34 +1,78 @@
-
+# ============================================
+# DOCKER COMPOSE - Local Development Setup
+# Purpose: Run Next.js app + PostgreSQL database together
+# ============================================
 
 services:
+  # ==================
+  # APP SERVICE
+  # Your Next.js application
+  # ==================
   app:
+    # Build from Dockerfile in current directory
     build:
       context: .
+    
+    # Load environment variables from .env.docker
+    # This sets DATABASE_URL at runtime (when container runs)
     env_file:
       - .env.docker
+    
+    # Map port 3000 in container to port 3000 on your machine
+    # Access app at http://localhost:3000
     ports:
       - "3000:3000"
+    
+    # Don't start app until database is healthy and ready
+    # Prevents connection errors on startup
     depends_on:
       db:
         condition: service_healthy
-    restart: unless-stopped 
+    
+    # Auto-restart if container crashes
+    restart: unless-stopped
 
+  # ==================
+  # DATABASE SERVICE  
+  # PostgreSQL database
+  # ==================
   db:
+    # Use official PostgreSQL 15 Alpine image (lightweight)
     image: postgres:15-alpine
+    
+    # Always restart if it stops (database should stay running)
     restart: always
+    
+    # Set database credentials
+    # These match what's in .env.docker DATABASE_URL
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
       POSTGRES_DB: mydb
+    
+    # Health check - makes sure database is ready before starting app
+    # pg_isready checks if PostgreSQL is accepting connections
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      retries: 5
-      start_period: 5s
+      interval: 5s       # Check every 5 seconds
+      retries: 5         # Try 5 times before giving up
+      start_period: 5s   # Wait 5s before first check
+    
+    # Expose database port to your machine
+    # Allows tools like pgAdmin or Prisma Studio to connect
     ports:
       - "5432:5432"
+    
+    # Persist database data even when container stops
+    # Without this, you'd lose all data on container restart
     volumes:
       - db_data:/var/lib/postgresql/data
 
+# ==================
+# VOLUMES
+# Named storage for persistent data
+# ==================
 volumes:
+  # Database data persists here
+  # Lives on your machine, survives container restarts
   db_data:
