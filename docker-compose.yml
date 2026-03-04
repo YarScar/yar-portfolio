@@ -4,8 +4,6 @@ services:
   app:
     build:
       context: .
-      args:
-        DATABASE_URL: postgresql://postgres:password@db:5432/mydb
     env_file:
       - .env.docker
     ports:
