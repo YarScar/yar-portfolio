@@ -9,7 +9,7 @@ A polished, full-stack portfolio showcasing projects, interactive UI, and a prod
 - Contact form persistence for inbound messages and lead tracking.
 - **Dockerized environment:** app and database run in isolated containers for consistent builds.
 - **Future-ready for hosted DB:** can connect to a Neon PostgreSQL instance.
-
+tehe
 ## Highlights
 - Robust project management: create, update, delete, and view project details.
 - Employer-friendly UX: interactive 3D-inspired cards and refined visual design.
