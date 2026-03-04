@@ -1,35 +1,61 @@
+# ============================================
+# CI - BUILD VERIFICATION
+# This workflow runs automatically on GitHub
+# when I push code or make pull requests
+# ============================================
+
 name: CI - Build Verification
 
+# When should this workflow run?
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop ]  # Runs when I push to main or develop
   pull_request:
-    branches: [ main ]
+    branches: [ main ]           # Runs when someone makes a Pull Request (PR) to main
+                                 # Pull Request = suggesting changes before merging to main
 
+# Jobs are the tasks that run (can run in parallel)
 jobs:
+  # ==================
+  # JOB 1: BUILD TEST
+  # Purpose: Make sure my Docker image builds without errors
+  # ==================
   build:
     name: Verify Build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # Use GitHub's free Ubuntu server
 
     steps:
+      # Step 1: Download my code from GitHub
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Step 2: Try to build my Docker image
+      # If this fails, I know something is wrong with my Dockerfile
+      # Success = my Docker setup is working correctly
       - name: Build Docker image
         run: docker build -t my-app .
 
+  # ==================
+  # JOB 2: SECURITY CHECK
+  # Purpose: Check if any of my npm packages have known security issues
+  # ==================
   security:
     name: Security Check
     runs-on: ubuntu-latest
     
     steps:
+      # Step 1: Download my code
       - name: Checkout code
         uses: actions/checkout@v4
         
+      # Step 2: Install Node.js (needed to run npm commands)
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '20'  # Same version as my Dockerfile
           
+      # Step 3: Check for vulnerable packages
+      # The "|| true" means "don't fail the build if there are warnings"
+      # I'll get notified but CI will still pass
       - name: Security audit
         run: npm audit || true
