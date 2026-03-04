@@ -9,10 +9,18 @@ COPY . .
 ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
 RUN npm run build
 
-# Stage 2: Run
+# Stage 2: Run (Standalone)
 FROM node:20-alpine
 WORKDIR /app
-COPY --from=builder /app ./
+
+# Copy only the standalone output
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/prisma ./prisma
+
 ENV NODE_ENV=production
 EXPOSE 3000
-CMD ["npm", "start"]
+
+# Standalone server starts on server.js
+CMD ["node", "server.js"]
