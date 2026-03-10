@@ -1,13 +1,13 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
+import { Pool } from 'pg';
 
 let prisma;
 
 beforeAll(() => {
-  const adapter = new PrismaPg({ 
-    connectionString: process.env.DATABASE_URL 
-  });
+  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  const adapter = new PrismaPg(pool);
   prisma = new PrismaClient({ adapter });
 });
 
