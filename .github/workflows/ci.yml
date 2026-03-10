@@ -10,6 +10,7 @@ jobs:
   build:
     name: Verify Build
     runs-on: ubuntu-latest
+    needs: security #added this so it is security first truely
 
     steps:
       - name: Checkout code
@@ -32,4 +33,4 @@ jobs:
           node-version: '20'
           
       - name: Security audit
-        run: npm audit || true
+        run: npm audit # removed (|| true) so it is real security
