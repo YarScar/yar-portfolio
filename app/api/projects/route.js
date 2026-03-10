@@ -1,11 +1,18 @@
-import 'dotenv/config';
-import { PrismaClient } from "@prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
-import { Pool } from 'pg';
+// ============================================
+// API ROUTE: /api/projects
+// Purpose: Handle GET (fetch all) and POST (create new) projects
+// ============================================
 
+import 'dotenv/config';  // Load environment variables from .env file
+import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";  // PostgreSQL adapter
+import { Pool } from 'pg';                       // Connection pool manager
+
+// Setup database connection (same as lib/prisma.js)
+// Pool manages connections to Neon database
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-const adapter = new PrismaPg(pool);
-const prisma = new PrismaClient({ adapter });
+const adapter = new PrismaPg(pool);  // Adapter translates Prisma queries to PostgreSQL
+const prisma = new PrismaClient({ adapter });  // Prisma client for database operations
 
 export async function GET() {
   try {

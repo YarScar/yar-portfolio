@@ -1,14 +1,22 @@
+// ============================================
+// DATABASE TESTS
+// Purpose: Test Prisma schema and database queries
+// Run with: npm test
+// ============================================
+
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { PrismaClient } from "@prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
-import { Pool } from 'pg';
+import { PrismaPg } from "@prisma/adapter-pg";  // PostgreSQL adapter
+import { Pool } from 'pg';                       // Connection pool manager
 
 let prisma;
 
+// Setup: Run before all tests
 beforeAll(() => {
+  // Create database connection for testing
   const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-  const adapter = new PrismaPg(pool);
-  prisma = new PrismaClient({ adapter });
+  const adapter = new PrismaPg(pool);  // Adapter translates Prisma queries to PostgreSQL
+  prisma = new PrismaClient({ adapter });  // Prisma client for database operations
 });
 
 afterAll(async () => {

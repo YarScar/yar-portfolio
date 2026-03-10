@@ -1,27 +1,42 @@
+// ============================================
+// PRISMA SCHEMA - Database Structure
+// Purpose: Defines what tables/fields exist in database
+// ============================================
+
+// Generator: Creates Prisma Client code for JavaScript
 generator client {
   provider = "prisma-client-js"
 }
 
+// Datasource: Where is the database?
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "postgresql"                // We're using PostgreSQL (Neon)
+  url      = env("DATABASE_URL")         // Connection string from .env file
 }
 
+// ==================
+// PROJECT TABLE
+// Stores portfolio projects
+// ==================
 model Project {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String
-  image       String?
-  url         String?
-  createdAt   DateTime @default(now())
-  tags        String[] @default([])
-  long        String?
+  id          Int      @id @default(autoincrement())  // Primary key, auto-increments
+  title       String                                  // Project name
+  description String                                  // Short description
+  image       String?                                 // Image URL (? = optional)
+  url         String?                                 // Live demo link (? = optional)
+  createdAt   DateTime @default(now())               // When created (auto-set)
+  tags        String[] @default([])                  // Array of tags (e.g., ["React", "Node"])
+  long        String?                                 // Long description (? = optional)
 }
 
+// ==================
+// MESSAGE TABLE
+// Stores contact form submissions
+// ==================
 model Message {
-  id        Int      @id @default(autoincrement())
-  name      String?
-  email     String?
-  message   String
-  createdAt DateTime @default(now())
+  id        Int      @id @default(autoincrement())  // Primary key, auto-increments
+  name      String?                                 // Sender name (? = optional)
+  email     String?                                 // Sender email (? = optional)
+  message   String                                  // Message content (required)
+  createdAt DateTime @default(now())               // When sent (auto-set)
 }

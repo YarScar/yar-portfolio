@@ -1,11 +1,19 @@
-import 'dotenv/config';
-import { PrismaClient } from "@prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
-import { Pool } from 'pg';
+// ============================================
+// DATABASE SEED SCRIPT
+// Purpose: Fill database with sample/test data
+// Run with: npm run seed or node prisma/seed.js
+// ============================================
 
+import 'dotenv/config';  // Load environment variables from .env file
+import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";  // PostgreSQL adapter
+import { Pool } from 'pg';                       // Connection pool manager
+
+// Setup database connection
+// Pool manages connections to Neon database
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-const adapter = new PrismaPg(pool);
-const prisma = new PrismaClient({ adapter });
+const adapter = new PrismaPg(pool);  // Adapter translates Prisma queries to PostgreSQL
+const prisma = new PrismaClient({ adapter });  // Prisma client for database operations
 
 async function main() {
   // Example seed data using ES8+ features
