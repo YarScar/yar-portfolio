@@ -61,4 +61,4 @@ jobs:
       # I'll get notified but CI will still pass
       # Remove "|| true" when ready for production to enforce strict security
       - name: Security audit
-        run: npm audit || true
+        run: npm audit
