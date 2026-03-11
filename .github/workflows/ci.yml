@@ -114,38 +114,39 @@ jobs:
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/portfolio_test?schema=public
       
-      # Step 10: Build Docker containers (verify production build works)
+      # Step 10: Stop GitHub Actions postgres container to free port 5432
+      - name: Stop GitHub Actions postgres
+        run: docker stop $(docker ps -q --filter ancestor=postgres:15-alpine) || true
+      
+      # Step 11: Build Docker containers (verify production build works)
       - name: Build Docker containers
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml build
+        run: docker compose build
       
-      # Step 11: Start Docker services
+      # Step 12: Start Docker services (with local postgres)
       - name: Start Docker services
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d
+        run: docker compose up -d
       
-      # Step 12: Wait for database to be ready
+      # Step 13: Wait for database to be ready
       - name: Wait for database to be ready
         run: sleep 15
       
-      # Step 13: Run database migrations in Docker
+      # Step 14: Run database migrations in Docker
       - name: Run database migrations in Docker
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T app npm run migrate
+        run: docker compose exec -T app npm run migrate
       
-      # Step 14: Verify deployment
-      # Check that the app container is running and healthy
+      # Step 15: Verify deployment
       - name: Verify deployment
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml ps
+        run: docker compose ps
       
-      # Step 15: Show container logs (helpful for debugging)
-      # Only runs if previous steps failed
+      # Step 16: Show container logs (helpful for debugging)
       - name: Show logs on failure
         if: failure()
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs
+        run: docker compose logs
       
-      # Step 16: Clean up (always runs, even if tests failed)
-      # -v = remove volumes too (clean slate for next run)
+      # Step 17: Clean up (always runs, even if tests failed)
       - name: Tear down containers
         if: always()
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
+        run: docker compose down -v
 
   # ==========================================
   # JOB 3: DEPLOY TO PRODUCTION (Optional)
