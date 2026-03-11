@@ -6,7 +6,7 @@
 
 services:
   # Override database service for CI
-  # Map to different port to avoid conflict with GitHub Actions postgres service on 5432
+  # Don't expose database port - app container connects via internal Docker network
+  # GitHub Actions already has postgres on port 5432 for tests
   db:
-    ports:
-      - "5433:5432"  # Map to 5433 on host to avoid conflict with Actions postgres on 5432
+    ports: !reset []
