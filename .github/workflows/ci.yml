@@ -1,10 +1,10 @@
 # ============================================
-# CI - BUILD VERIFICATION
+# CI/CD - SECURITY-FIRST BUILD & DEPLOYMENT
 # This workflow runs automatically on GitHub
 # when I push code or make pull requests
 # ============================================
 
-name: CI - Build Verification
+name: CI/CD Pipeline
 
 # When should this workflow run?
 on:
@@ -14,39 +14,19 @@ on:
     branches: [ main ]           # Runs when someone makes a Pull Request (PR) to main
                                  # Pull Request = suggesting changes before merging to main
 
-# Jobs are the tasks that run (can run in parallel)
+# Jobs run in sequence (security → build-and-test → deploy)
 jobs:
-  # ==================
-  # JOB 1: BUILD TEST
-  # Purpose: Make sure my Docker image builds without errors
-  # ==================
-  build:
-    name: Verify Build
-    runs-on: ubuntu-latest  # Use GitHub's free Ubuntu server
-    needs: security         # Don't start until security job passes (security-first approach!)
-
-    steps:
-      # Step 1: Download my code from GitHub
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      # Step 2: Try to build my Docker image
-      # If this fails, I know something is wrong with my Dockerfile
-      # Success = my Docker setup is working correctly
-      - name: Build Docker image
-        run: docker build -t my-app .
-
-  # ==================
-  # JOB 2: SECURITY CHECK
-  # Purpose: Check if any of my npm packages have known security issues
-  # This runs FIRST before build (security-first strategy)
-  # ==================
+  # ==========================================
+  # JOB 1: SECURITY CHECK (Runs FIRST!)
+  # Purpose: Check for vulnerable npm packages
+  # Security-first approach: blocks everything if vulnerabilities found
+  # ==========================================
   security:
-    name: Security Check
+    name: Security Audit
     runs-on: ubuntu-latest
     
     steps:
-      # Step 1: Download my code
+      # Step 1: Download my code from GitHub
       - name: Checkout code
         uses: actions/checkout@v4
         
@@ -54,11 +34,107 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'  # Same version as my Dockerfile
+          node-version: '20'  # Same version as Dockerfile
           
       # Step 3: Check for vulnerable packages
-      # The "|| true" means "don't fail the build if there are warnings"
-      # I'll get notified but CI will still pass
-      # Remove "|| true" when ready for production to enforce strict security
-      - name: Security audit
+      # This will FAIL the build if vulnerabilities are found
+      # For development, add "|| true" at the end to show warnings only
+      - name: Run security audit
         run: npm audit
+
+  # ==========================================
+  # JOB 2: BUILD, TEST & VERIFY
+  # Purpose: Full integration test with Docker + Database
+  # Only runs if security check passes!
+  # ==========================================
+  build-and-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    needs: security  # ← Waits for security job to pass (security-first!)
+    
+    steps:
+      # Step 1: Download code from GitHub
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      # Step 2: Build Docker containers (app + database)
+      # Uses docker-compose.yml to build your Dockerfile
+      - name: Build Docker containers
+        run: docker compose build
+      
+      # Step 3: Start all services in background
+      # -d = detached mode (runs in background)
+      # Starts: app container + PostgreSQL database
+      - name: Start services
+        run: docker compose up -d
+      
+      # Step 4: Wait for PostgreSQL to be ready
+      # Database needs a few seconds to initialize
+      # Without this, migrations might fail
+      - name: Wait for database to be ready
+        run: sleep 15
+      
+      # Step 5: Run database migrations
+      # -T = don't allocate a TTY (needed for CI environment)
+      # Creates all tables/schema in the test database
+      - name: Run database migrations
+        run: docker compose exec -T app npx prisma migrate deploy
+      
+      # Step 6: Run all tests
+      # If any test fails, the job stops here
+      # Uses vitest to run tests in tests/ folder
+      - name: Run tests
+        run: docker compose exec -T app npm test
+      
+      # Step 7: Show container logs (helpful for debugging)
+      # Only runs if previous steps failed
+      - name: Show logs on failure
+        if: failure()
+        run: docker compose logs
+      
+      # Step 8: Clean up (always runs, even if tests failed)
+      # -v = remove volumes too (clean slate for next run)
+      - name: Tear down containers
+        if: always()
+        run: docker compose down -v
+
+  # ==========================================
+  # JOB 3: DEPLOY TO PRODUCTION (Optional)
+  # Purpose: Auto-deploy to EC2 server
+  # Only runs: on main branch, after all tests pass
+  # ==========================================
+  deploy:
+    name: Deploy to EC2
+    runs-on: ubuntu-latest
+    needs: build-and-test  # ← Waits for tests to pass
+    if: github.ref == 'refs/heads/main'  # ← Only runs on main branch (not PRs or develop)
+    
+    steps:
+      # Deploy via SSH to EC2 server
+      # Requires secrets: EC2_HOST, EC2_USER, EC2_KEY
+      # To set up: GitHub repo → Settings → Secrets → Actions
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}        # Your EC2 public IP
+          username: ${{ secrets.EC2_USER }}    # Usually 'ubuntu' or 'ec2-user'
+          key: ${{ secrets.EC2_KEY }}          # Your .pem private key content
+          script: |
+            # Navigate to app directory (or clone if first deploy)
+            if [ ! -d ~/yar-portfolio ]; then
+              git clone https://github.com/YOUR-USERNAME/yar-portfolio.git ~/yar-portfolio
+            fi
+            cd ~/yar-portfolio
+            
+            # Pull latest code from main branch
+            git pull origin main
+            
+            # Rebuild and restart containers
+            docker compose down
+            docker compose up --build -d
+            
+            # Run database migrations on production
+            docker compose exec -T app npx prisma migrate deploy
+            
+            # Optional: Show running containers
+            docker compose ps
