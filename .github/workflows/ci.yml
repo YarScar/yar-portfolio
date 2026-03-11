@@ -76,9 +76,10 @@ jobs:
       
       # Step 5: Run database migrations
       # -T = don't allocate a TTY (needed for CI environment)
+      # Uses npm run migrate (uses installed Prisma 6.19.2, not npx which downloads latest)
       # Creates all tables/schema in the test database
       - name: Run database migrations
-        run: docker compose exec -T app npx prisma migrate deploy
+        run: docker compose exec -T app npm run migrate
       
       # Step 6: Run all tests
       # If any test fails, the job stops here
@@ -134,7 +135,8 @@ jobs:
             docker compose up --build -d
             
             # Run database migrations on production
-            docker compose exec -T app npx prisma migrate deploy
+            # Uses installed Prisma version, not npx (prevents version mismatch)
+            docker compose exec -T app npm run migrate
             
             # Optional: Show running containers
             docker compose ps
