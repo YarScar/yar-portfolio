@@ -14,9 +14,18 @@ const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 const adapter = new PrismaPg(pool);  // Adapter translates Prisma queries to PostgreSQL
 const prisma = new PrismaClient({ adapter });  // Prisma client for database operations
 
+// ============================================
+// GET /api/projects/[id]
+// Fetch a single project by ID
+// ============================================
 export async function GET(request, { params }) {
+  // IMPORTANT: In Next.js 15+, params is a Promise and must be awaited
+  // Old way (Next.js 14): const id = Number(params.id)
+  // New way (Next.js 15+): await params first, then access properties
   const { id: paramId } = await params;
   const id = Number(paramId);
+  
+  // Validate that id is a valid number
   if (Number.isNaN(id)) {
     return new Response(JSON.stringify({ message: 'Invalid id' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
   }
@@ -31,9 +40,15 @@ export async function GET(request, { params }) {
   }
 }
 
+// ============================================
+// DELETE /api/projects/[id]
+// Delete a project by ID
+// ============================================
 export async function DELETE(request, { params }) {
+  // Await params (required in Next.js 15+)
   const { id: paramId } = await params;
   const id = Number(paramId);
+  
   if (Number.isNaN(id)) {
     return new Response(JSON.stringify({ message: 'Invalid id' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
   }
@@ -54,9 +69,15 @@ export async function DELETE(request, { params }) {
   }
 }
 
+// ============================================
+// PUT /api/projects/[id]
+// Update a project by ID
+// ============================================
 export async function PUT(request, { params }) {
+  // Await params (required in Next.js 15+)
   const { id: paramId } = await params;
   const id = Number(paramId);
+  
   if (Number.isNaN(id)) {
     return new Response(JSON.stringify({ message: 'Invalid id' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
   }

@@ -2,7 +2,14 @@ import Link from "next/link";
 import Image from "next/image";
 import prisma from '../../../lib/prisma';
 
+// ============================================
+// PROJECT DETAIL PAGE
+// Shows detailed information about a single project
+// ============================================
 export default async function ProjectDetailPage({ params }) {
+  // IMPORTANT: In Next.js 15+, params is asynchronous
+  // Must await before accessing properties
+  // This ensures compatibility with the latest Next.js version
   const { id: paramId } = await params;
   const id = Number(paramId);
 

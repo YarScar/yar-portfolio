@@ -114,12 +114,25 @@ jobs:
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/portfolio_test?schema=public
       
+      # ============================================
+      # CLEANUP BEFORE DOCKER
+      # Problem: After tests, dev server (port 3000) and GitHub Actions postgres (port 5432) are still running
+      # Solution: Kill both processes to free up ports for Docker Compose
+      # Why: Docker needs these same ports for its own containers
+      # ============================================
       # Step 10: Stop dev server and GitHub Actions postgres to free ports
       - name: Stop dev server and postgres
         run: |
-          pkill -f "next dev" || true
-          docker stop $(docker ps -q --filter ancestor=postgres:15-alpine) || true
+          pkill -f "next dev" || true                                            # Kill Next.js dev server (frees port 3000)
+          docker stop $(docker ps -q --filter ancestor=postgres:15-alpine) || true  # Stop GitHub Actions postgres (frees port 5432)
+          # Note: "|| true" prevents errors if process doesn't exist (makes cleanup safe to run multiple times)
       
+      # ============================================
+      # DOCKER DEPLOYMENT VERIFICATION
+      # Purpose: Verify that Docker Compose setup works correctly
+      # This simulates the production environment (local DB + containerized app)
+      # Different from above tests which use GitHub Actions infrastructure
+      # ============================================
       # Step 11: Build Docker containers (verify production build works)
       - name: Build Docker containers
         run: docker compose build
