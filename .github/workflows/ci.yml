@@ -92,50 +92,56 @@ jobs:
       - name: Run migrations
         run: npx --yes prisma@6.19.2 migrate deploy
       
-      # Step 6: Start Next.js dev server in background
+      # Step 6: Seed test database with sample data
+      - name: Seed database
+        run: node prisma/seed.js
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/portfolio_test?schema=public
+      
+      # Step 7: Start Next.js dev server in background
       - name: Start dev server
         run: npm run dev &
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/portfolio_test?schema=public
       
-      # Step 7: Wait for server to be ready
+      # Step 8: Wait for server to be ready
       - name: Wait for server
         run: sleep 10
       
-      # Step 8: Run tests against running server and database
+      # Step 9: Run tests against running server and database
       - name: Run tests
         run: npm test
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/portfolio_test?schema=public
       
-      # Step 9: Build Docker containers (verify production build works)
+      # Step 10: Build Docker containers (verify production build works)
       - name: Build Docker containers
         run: docker compose build
       
-      # Step 10: Start Docker services
+      # Step 11: Start Docker services
       - name: Start Docker services
         run: docker compose up -d
       
-      # Step 11: Wait for database to be ready
+      # Step 12: Wait for database to be ready
       - name: Wait for database to be ready
         run: sleep 15
       
-      # Step 12: Run database migrations in Docker
+      # Step 13: Run database migrations in Docker
       - name: Run database migrations in Docker
         run: docker compose exec -T app npm run migrate
       
-      # Step 9: Verify deployment
+      # Step 14: Verify deployment
       # Check that the app container is running and healthy
       - name: Verify deployment
         run: docker compose ps
       
-      # Step 10: Show container logs (helpful for debugging)
+      # Step 15: Show container logs (helpful for debugging)
       # Only runs if previous steps failed
       - name: Show logs on failure
         if: failure()
         run: docker compose logs
       
-      # Step 11: Clean up (always runs, even if tests failed)
+      # Step 16: Clean up (always runs, even if tests failed)
       # -v = remove volumes too (clean slate for next run)
       - name: Tear down containers
         if: always()
