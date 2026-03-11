@@ -6,6 +6,7 @@
 
 services:
   # Override database service for CI
-  # Remove port mapping to avoid conflict with GitHub Actions postgres service
+  # Map to different port to avoid conflict with GitHub Actions postgres service on 5432
   db:
-    ports: []  # Don't expose port 5432 to host in CI (prevents conflict)
+    ports:
+      - "5433:5432"  # Map to 5433 on host to avoid conflict with Actions postgres on 5432
