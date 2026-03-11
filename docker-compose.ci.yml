@@ -1,12 +1,20 @@
 # ============================================
 # DOCKER COMPOSE - CI/CD Override
 # Purpose: Override settings for GitHub Actions CI
-# Usage: docker compose -f docker-compose.yml -f docker-compose.ci.yml up
+# In CI, we use the GitHub Actions postgres service instead of a separate container
 # ============================================
 
 services:
-  # Override database service for CI
-  # Don't expose database port - app container connects via internal Docker network
-  # GitHub Actions already has postgres on port 5432 for tests
+  # Override app service for CI
+  app:
+    # Remove dependency on db service
+    depends_on: []
+    
+    # Use GitHub Actions postgres instead of Docker postgres
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@172.17.0.1:5432/portfolio_test?schema=public
+  
+  # Exclude database service in CI using profile
   db:
-    ports: !reset []
+    profiles:
+      - donotstart  # This profile is never activated, so db won't start
