@@ -14,7 +14,7 @@
     "build": "next build",
     "start": "next start",
     "test": "vitest run",
-    "migrate": "npx prisma migrate deploy",
+    "migrate": "node node_modules/.bin/prisma migrate deploy",
     "postinstall": "npx prisma generate"
   },
   "dependencies": {
