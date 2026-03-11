@@ -1,0 +1,11 @@
+# ============================================
+# DOCKER COMPOSE - CI/CD Override
+# Purpose: Override settings for GitHub Actions CI
+# Usage: docker compose -f docker-compose.yml -f docker-compose.ci.yml up
+# ============================================
+
+services:
+  # Override database service for CI
+  # Remove port mapping to avoid conflict with GitHub Actions postgres service
+  db:
+    ports: []  # Don't expose port 5432 to host in CI (prevents conflict)
