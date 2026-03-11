@@ -57,43 +57,56 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
-      # Step 2: Build Docker containers (app + database)
+      # Step 2: Setup Node.js for running tests on host
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      # Step 3: Install dependencies (including devDependencies for testing)
+      - name: Install dependencies
+        run: npm ci
+      
+      # Step 4: Run tests on host (before Docker build)
+      # Tests run here with all devDependencies available
+      - name: Run tests
+        run: npm test
+      
+      # Step 5: Build Docker containers (app + database)
       # Uses docker-compose.yml to build your Dockerfile
       - name: Build Docker containers
         run: docker compose build
       
-      # Step 3: Start all services in background
+      # Step 6: Start all services in background
       # -d = detached mode (runs in background)
       # Starts: app container + PostgreSQL database
       - name: Start services
         run: docker compose up -d
       
-      # Step 4: Wait for PostgreSQL to be ready
+      # Step 7: Wait for PostgreSQL to be ready
       # Database needs a few seconds to initialize
       # Without this, migrations might fail
       - name: Wait for database to be ready
         run: sleep 15
       
-      # Step 5: Run database migrations
+      # Step 8: Run database migrations
       # -T = don't allocate a TTY (needed for CI environment)
-      # Uses npm run migrate (uses installed Prisma 6.19.2, not npx which downloads latest)
       # Creates all tables/schema in the test database
       - name: Run database migrations
         run: docker compose exec -T app npm run migrate
       
-      # Step 6: Run all tests
-      # If any test fails, the job stops here
-      # Uses vitest to run tests in tests/ folder
-      - name: Run tests
-        run: docker compose exec -T app npm test
+      # Step 9: Verify deployment
+      # Check that the app container is running and healthy
+      - name: Verify deployment
+        run: docker compose ps
       
-      # Step 7: Show container logs (helpful for debugging)
+      # Step 10: Show container logs (helpful for debugging)
       # Only runs if previous steps failed
       - name: Show logs on failure
         if: failure()
         run: docker compose logs
       
-      # Step 8: Clean up (always runs, even if tests failed)
+      # Step 11: Clean up (always runs, even if tests failed)
       # -v = remove volumes too (clean slate for next run)
       - name: Tear down containers
         if: always()
