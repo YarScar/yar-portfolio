@@ -3,7 +3,8 @@ import Image from "next/image";
 import prisma from '../../../lib/prisma';
 
 export default async function ProjectDetailPage({ params }) {
-  const id = Number(params.id);
+  const { id: paramId } = await params;
+  const id = Number(paramId);
 
   // Server-side: fetch directly from the database
   let project = null;

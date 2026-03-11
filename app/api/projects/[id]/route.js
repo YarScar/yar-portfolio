@@ -15,7 +15,8 @@ const adapter = new PrismaPg(pool);  // Adapter translates Prisma queries to Pos
 const prisma = new PrismaClient({ adapter });  // Prisma client for database operations
 
 export async function GET(request, { params }) {
-  const id = Number(params.id);
+  const { id: paramId } = await params;
+  const id = Number(paramId);
   if (Number.isNaN(id)) {
     return new Response(JSON.stringify({ message: 'Invalid id' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
   }
@@ -31,7 +32,8 @@ export async function GET(request, { params }) {
 }
 
 export async function DELETE(request, { params }) {
-  const id = Number(params.id);
+  const { id: paramId } = await params;
+  const id = Number(paramId);
   if (Number.isNaN(id)) {
     return new Response(JSON.stringify({ message: 'Invalid id' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
   }
@@ -53,7 +55,8 @@ export async function DELETE(request, { params }) {
 }
 
 export async function PUT(request, { params }) {
-  const id = Number(params.id);
+  const { id: paramId } = await params;
+  const id = Number(paramId);
   if (Number.isNaN(id)) {
     return new Response(JSON.stringify({ message: 'Invalid id' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
   }
