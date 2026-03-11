@@ -114,9 +114,11 @@ jobs:
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/portfolio_test?schema=public
       
-      # Step 10: Stop GitHub Actions postgres container to free port 5432
-      - name: Stop GitHub Actions postgres
-        run: docker stop $(docker ps -q --filter ancestor=postgres:15-alpine) || true
+      # Step 10: Stop dev server and GitHub Actions postgres to free ports
+      - name: Stop dev server and postgres
+        run: |
+          pkill -f "next dev" || true
+          docker stop $(docker ps -q --filter ancestor=postgres:15-alpine) || true
       
       # Step 11: Build Docker containers (verify production build works)
       - name: Build Docker containers
