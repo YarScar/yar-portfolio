@@ -116,16 +116,30 @@ jobs:
       
       # ============================================
       # SETUP DOCKER FOR DEPLOYMENT VERIFICATION
-      # Install Docker for the later Docker Compose verification steps
+      # Install Docker and Docker Compose for deployment verification steps
       # ============================================
-      - name: Install Docker
+      - name: Install Docker and Docker Compose
         run: |
+          # Install Docker
           sudo apt-get update
-          sudo apt-get install -y docker.io docker-compose-plugin
+          sudo apt-get install -y docker.io
           sudo systemctl start docker
           sudo systemctl enable docker
+          
+          # Install Docker Compose V2
+          DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
+          mkdir -p $DOCKER_CONFIG/cli-plugins
+          curl -SL https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
+          chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
+          
+          # Verify installation
           docker --version
           docker compose version
+      
+      # Setup environment for Docker (use test database, not local postgres)
+      - name: Setup Docker environment
+        run: |
+          echo "DATABASE_URL=postgresql://postgres:postgres@172.17.0.1:5432/portfolio_test?schema=public" > .env.docker
       
       # ============================================
       # CLEANUP BEFORE DOCKER
@@ -133,48 +147,47 @@ jobs:
       # Solution: Kill both processes to free up ports for Docker Compose
       # Why: Docker needs these same ports for its own containers
       # ============================================
-      # Step 10: Stop dev server and GitHub Actions postgres to free ports
-      - name: Stop dev server and postgres
+      # Step 10: Stop dev server to free port 3000
+      - name: Stop dev server
         run: |
-          pkill -f "next dev" || true                                            # Kill Next.js dev server (frees port 3000)
-          docker stop $(docker ps -q --filter ancestor=postgres:15-alpine) || true  # Stop GitHub Actions postgres (frees port 5432)
-          # Note: "|| true" prevents errors if process doesn't exist (makes cleanup safe to run multiple times)
+          pkill -f "next dev" || true  # Kill Next.js dev server (frees port 3000)
+          # Note: Keeping GitHub Actions postgres running - Docker app will connect to it
       
       # ============================================
       # DOCKER DEPLOYMENT VERIFICATION
       # Purpose: Verify that Docker Compose setup works correctly
-      # This simulates the production environment (local DB + containerized app)
-      # Different from above tests which use GitHub Actions infrastructure
+      # Docker app connects to GitHub Actions postgres (172.17.0.1:5432)
+      # No local database container - simulates production with external DB (Neon)
       # ============================================
       # Step 11: Build Docker containers (verify production build works)
       - name: Build Docker containers
-        run: docker compose build
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml build
       
-      # Step 12: Start Docker services (with local postgres)
+      # Step 12: Start Docker app service (connects to external database)
       - name: Start Docker services
-        run: docker compose up -d
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d
       
-      # Step 13: Wait for database to be ready
-      - name: Wait for database to be ready
-        run: sleep 15
+      # Step 13: Wait for app to be ready
+      - name: Wait for app to be ready
+        run: sleep 10
       
       # Step 14: Run database migrations in Docker
       - name: Run database migrations in Docker
-        run: docker compose exec -T app npm run migrate
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T app npm run migrate
       
       # Step 15: Verify deployment
       - name: Verify deployment
-        run: docker compose ps
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml ps
       
       # Step 16: Show container logs (helpful for debugging)
       - name: Show logs on failure
         if: failure()
-        run: docker compose logs
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs
       
       # Step 17: Clean up (always runs, even if tests failed)
       - name: Tear down containers
         if: always()
-        run: docker compose down -v
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
 
   # ==========================================
   # JOB 3: DEPLOY TO PRODUCTION (Optional)
