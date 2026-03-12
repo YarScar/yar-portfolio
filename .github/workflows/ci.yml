@@ -115,33 +115,6 @@ jobs:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/portfolio_test?schema=public
       
       # ============================================
-      # SETUP DOCKER FOR DEPLOYMENT VERIFICATION
-      # Install Docker from official Docker registry
-      # ============================================
-      - name: Install Docker and Docker Compose
-        run: |
-          # Add Docker's official GPG key and repository
-          sudo apt-get update
-          sudo apt-get install -y ca-certificates curl
-          sudo install -m 0755 -d /etc/apt/keyrings
-          sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-          sudo chmod a+r /etc/apt/keyrings/docker.asc
-          
-          # Add Docker repository
-          echo \
-            "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-            $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-            sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-          
-          # Install Docker and Docker Compose from official registry
-          sudo apt-get update
-          sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-          
-          # Verify installation
-          docker --version
-          docker compose version
-      
-      # ============================================
       # CLEANUP BEFORE DOCKER
       # Problem: After tests, dev server (port 3000) and GitHub Actions postgres (port 5432) are still running
       # Solution: Kill both processes to free up ports for Docker Compose
@@ -152,12 +125,13 @@ jobs:
         run: |
           pkill -f "next dev" || true                                            # Kill Next.js dev server (frees port 3000)
           docker stop $(docker ps -q --filter ancestor=postgres:15-alpine) || true  # Stop GitHub Actions postgres (frees port 5432)
-          # Note: "|| true" prevents errors if process doesn't exist
+          # Note: "|| true" prevents errors if process doesn't exist (makes cleanup safe to run multiple times)
       
       # ============================================
       # DOCKER DEPLOYMENT VERIFICATION
       # Purpose: Verify that Docker Compose setup works correctly
       # This simulates the production environment (local DB + containerized app)
+      # Different from above tests which use GitHub Actions infrastructure
       # ============================================
       # Step 11: Build Docker containers (verify production build works)
       - name: Build Docker containers
@@ -214,29 +188,47 @@ jobs:
             # Set project path (where to deploy on EC2)
             PROJECT_PATH="${{ secrets.EC2_PROJECT_PATH }}"
             
-            # Install Docker if not already installed
+            # ============================================
+            # CHECK AND INSTALL DOCKER IF MISSING
+            # ============================================
             if ! command -v docker &> /dev/null; then
-              echo "Installing Docker from official registry..."
+              echo "Docker not found. Installing Docker..."
+              
+              # Update package index
+              sudo apt-get update
+              
+              # Install prerequisites
+              sudo apt-get install -y ca-certificates curl gnupg lsb-release
               
               # Add Docker's official GPG key
-              sudo apt-get update
-              sudo apt-get install -y ca-certificates curl
               sudo install -m 0755 -d /etc/apt/keyrings
-              sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-              sudo chmod a+r /etc/apt/keyrings/docker.asc
+              curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+              sudo chmod a+r /etc/apt/keyrings/docker.gpg
               
-              # Add Docker repository
+              # Set up Docker repository
               echo \
-                "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-                $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-                sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+                "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+                $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
               
-              # Install Docker
+              # Install Docker Engine
               sudo apt-get update
               sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+              
+              # Add current user to docker group (allows running docker without sudo)
               sudo usermod -aG docker $USER
+              
+              # Start Docker service
+              sudo systemctl start docker
+              sudo systemctl enable docker
+              
+              echo "Docker installed successfully!"
+            else
+              echo "Docker is already installed."
             fi
             
+            # ============================================
+            # DEPLOY APPLICATION
+            # ============================================
             # Navigate to app directory (or clone if first deploy)
             if [ ! -d "$PROJECT_PATH" ]; then
               git clone https://github.com/YarScar/yar-portfolio.git "$PROJECT_PATH"
@@ -247,12 +239,12 @@ jobs:
             git pull origin main
             
             # Rebuild and restart containers
-            docker compose down
-            docker compose up --build -d
+            sudo docker compose down
+            sudo docker compose up --build -d
             
             # Run database migrations on production
             # Uses installed Prisma version, not npx (prevents version mismatch)
-            docker compose exec -T app npm run migrate
+            sudo docker compose exec -T app npm run migrate
             
             # Optional: Show running containers
-            docker compose ps
+            sudo docker compose ps
