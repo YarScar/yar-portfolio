@@ -176,7 +176,7 @@ jobs:
     
     steps:
       # Deploy via SSH to EC2 server
-      # Requires secrets: EC2_HOST, EC2_USER, EC2_KEY
+      # Requires secrets: EC2_HOST, EC2_USER, EC2_KEY, EC2_PROJECT_PATH
       # To set up: GitHub repo → Settings → Secrets → Actions
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1
@@ -185,11 +185,14 @@ jobs:
           username: ${{ secrets.EC2_USER }}    # Usually 'ubuntu' or 'ec2-user'
           key: ${{ secrets.EC2_KEY }}          # Your .pem private key content
           script: |
+            # Set project path (where to deploy on EC2)
+            PROJECT_PATH="${{ secrets.EC2_PROJECT_PATH }}"
+            
             # Navigate to app directory (or clone if first deploy)
-            if [ ! -d ~/yar-portfolio ]; then
-              git clone https://github.com/YOUR-USERNAME/yar-portfolio.git ~/yar-portfolio
+            if [ ! -d "$PROJECT_PATH" ]; then
+              git clone https://github.com/YarScar/yar-portfolio.git "$PROJECT_PATH"
             fi
-            cd ~/yar-portfolio
+            cd "$PROJECT_PATH"
             
             # Pull latest code from main branch
             git pull origin main
