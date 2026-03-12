@@ -126,7 +126,7 @@ jobs:
           sudo systemctl start docker
           sudo systemctl enable docker
           
-          # Install Docker Compose V2
+          # Install Docker Compose V2 (fixes docker-compose-plugin error)
           DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
           mkdir -p $DOCKER_CONFIG/cli-plugins
           curl -SL https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
@@ -136,58 +136,53 @@ jobs:
           docker --version
           docker compose version
       
-      # Setup environment for Docker (use test database, not local postgres)
-      - name: Setup Docker environment
-        run: |
-          echo "DATABASE_URL=postgresql://postgres:postgres@172.17.0.1:5432/portfolio_test?schema=public" > .env.docker
-      
       # ============================================
       # CLEANUP BEFORE DOCKER
       # Problem: After tests, dev server (port 3000) and GitHub Actions postgres (port 5432) are still running
       # Solution: Kill both processes to free up ports for Docker Compose
       # Why: Docker needs these same ports for its own containers
       # ============================================
-      # Step 10: Stop dev server to free port 3000
-      - name: Stop dev server
+      # Step 10: Stop dev server and GitHub Actions postgres to free ports
+      - name: Stop dev server and postgres
         run: |
-          pkill -f "next dev" || true  # Kill Next.js dev server (frees port 3000)
-          # Note: Keeping GitHub Actions postgres running - Docker app will connect to it
+          pkill -f "next dev" || true                                            # Kill Next.js dev server (frees port 3000)
+          docker stop $(docker ps -q --filter ancestor=postgres:15-alpine) || true  # Stop GitHub Actions postgres (frees port 5432)
+          # Note: "|| true" prevents errors if process doesn't exist
       
       # ============================================
       # DOCKER DEPLOYMENT VERIFICATION
       # Purpose: Verify that Docker Compose setup works correctly
-      # Docker app connects to GitHub Actions postgres (172.17.0.1:5432)
-      # No local database container - simulates production with external DB (Neon)
+      # This simulates the production environment (local DB + containerized app)
       # ============================================
       # Step 11: Build Docker containers (verify production build works)
       - name: Build Docker containers
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml build
+        run: docker compose build
       
-      # Step 12: Start Docker app service (connects to external database)
+      # Step 12: Start Docker services (with local postgres)
       - name: Start Docker services
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d
+        run: docker compose up -d
       
-      # Step 13: Wait for app to be ready
-      - name: Wait for app to be ready
-        run: sleep 10
+      # Step 13: Wait for database to be ready
+      - name: Wait for database to be ready
+        run: sleep 15
       
       # Step 14: Run database migrations in Docker
       - name: Run database migrations in Docker
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T app npm run migrate
+        run: docker compose exec -T app npm run migrate
       
       # Step 15: Verify deployment
       - name: Verify deployment
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml ps
+        run: docker compose ps
       
       # Step 16: Show container logs (helpful for debugging)
       - name: Show logs on failure
         if: failure()
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs
+        run: docker compose logs
       
       # Step 17: Clean up (always runs, even if tests failed)
       - name: Tear down containers
         if: always()
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
+        run: docker compose down -v
 
   # ==========================================
   # JOB 3: DEPLOY TO PRODUCTION (Optional)
