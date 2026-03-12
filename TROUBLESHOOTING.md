@@ -130,6 +130,67 @@ All three try to run simultaneously → Port conflicts!
 
 ---
 
+## Issue #3: Docker Not Installed on EC2
+
+### Problem
+EC2 deployment failed with these errors:
+```
+bash: line 14: docker: command not found
+bash: line 15: docker: command not found
+bash: line 19: docker: command not found
+Process exited with status 127
+```
+
+### Root Cause
+Fresh EC2 instances don't come with Docker pre-installed. The deployment script tried to run `docker compose` commands on a system that didn't have Docker.
+
+### Solution
+Updated the deployment workflow to:
+1. **Check if Docker exists** before running deployment commands
+2. **Auto-install Docker** if missing using official Docker installation method
+3. **Use `sudo`** for docker commands (required on fresh installs before user is added to docker group)
+
+**The workflow now:**
+```yaml
+# Check if Docker is installed
+if ! command -v docker &> /dev/null; then
+  # Install Docker automatically
+  sudo apt-get update
+  sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+  # Configure Docker
+  sudo usermod -aG docker $USER
+  sudo systemctl start docker
+fi
+
+# Run deployment with sudo (works for all cases)
+sudo docker compose up --build -d
+```
+
+### Files Modified
+- [.github/workflows/ci.yml](.github/workflows/ci.yml) - Added Docker installation check and sudo commands
+
+### Key Lessons
+- **EC2 instances are minimal by default** - only essential packages are installed
+- **Auto-installation in CI** makes deployment more robust (works on fresh servers)
+- **`sudo` for docker** ensures commands work before user is added to docker group
+- **`command -v docker`** is the standard way to check if a command exists
+
+### Required EC2 Setup
+**Operating System:** Ubuntu 20.04+ or Amazon Linux 2  
+**Inbound Rules (Security Group):**
+- SSH (port 22) - for deployment
+- HTTP (port 80) or HTTPS (port 443) - for web access
+- Custom TCP (port 3000) - if accessing app directly (optional)
+
+**Environment Variables on EC2:**
+Create `.env.docker` in your project directory with:
+```env
+DATABASE_URL=your_neon_database_url
+BLOB_READ_WRITE_TOKEN=your_vercel_blob_token
+```
+
+---
+
 ## CI/CD Workflow Sequence
 
 Understanding the workflow helps debug issues:
@@ -267,6 +328,7 @@ docker inspect yar-portfolio-app-1
 | Next.js params error | `expected { message: 'Invalid id' }` | `await params` before accessing |
 | Port 5432 in use | `Bind for 0.0.0.0:5432 failed` | Stop postgres before Docker |
 | Port 3000 in use | `address already in use` | Stop dev server before Docker |
+| Docker not found on EC2 | `docker: command not found` | Workflow auto-installs Docker |
 | Tests fail locally | `Unexpected token '<'` | Start dev server: `npm run dev` |
 | Prisma errors | Connection refused | Check `DATABASE_URL` env var |
 
@@ -281,5 +343,5 @@ docker inspect yar-portfolio-app-1
 
 ---
 
-**Last Updated**: March 11, 2026  
+**Last Updated**: March 12, 2026  
 **Maintainer**: Yara Kemeh

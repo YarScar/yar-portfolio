@@ -179,7 +179,7 @@ jobs:
       # Requires secrets: EC2_HOST, EC2_USER, EC2_KEY, EC2_PROJECT_PATH
       # To set up: GitHub repo → Settings → Secrets → Actions
       - name: Deploy to EC2
-        uses: appleboy/ssh-action@v1
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}        # Your EC2 public IP
           username: ${{ secrets.EC2_USER }}    # Usually 'ubuntu' or 'ec2-user'
