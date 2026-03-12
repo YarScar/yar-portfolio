@@ -79,36 +79,46 @@ jobs:
         with:
           node-version: '20'
       
-      # Step 3: Install dependencies (including devDependencies for testing)
+      # Step 3: Setup Docker (ensure Docker and Docker Compose are available)
+      - name: Setup Docker
+        run: |
+          # Ensure Docker daemon is running
+          sudo systemctl start docker
+          sudo systemctl enable docker
+          # Verify Docker is working
+          docker --version
+          docker compose version
+      
+      # Step 4: Install dependencies (including devDependencies for testing)
       - name: Install dependencies
         run: npm ci
       
-      # Step 4: Set up test database URL
+      # Step 5: Set up test database URL
       - name: Setup test database
         run: |
           echo "DATABASE_URL=postgresql://postgres:postgres@localhost:5432/portfolio_test?schema=public" > .env
       
-      # Step 5: Run database migrations
+      # Step 6: Run database migrations
       - name: Run migrations
         run: npx --yes prisma@6.19.2 migrate deploy
       
-      # Step 6: Seed test database with sample data
+      # Step 7: Seed test database with sample data
       - name: Seed database
         run: node prisma/seed.js
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/portfolio_test?schema=public
       
-      # Step 7: Start Next.js dev server in background
+      # Step 8: Start Next.js dev server in background
       - name: Start dev server
         run: npm run dev &
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/portfolio_test?schema=public
       
-      # Step 8: Wait for server to be ready
+      # Step 9: Wait for server to be ready
       - name: Wait for server
         run: sleep 10
       
-      # Step 9: Run tests against running server and database
+      # Step 10: Run tests against running server and database
       - name: Run tests
         run: npm test
         env:
@@ -120,7 +130,7 @@ jobs:
       # Solution: Kill both processes to free up ports for Docker Compose
       # Why: Docker needs these same ports for its own containers
       # ============================================
-      # Step 10: Stop dev server and GitHub Actions postgres to free ports
+      # Step 11: Stop dev server and GitHub Actions postgres to free ports
       - name: Stop dev server and postgres
         run: |
           pkill -f "next dev" || true                                            # Kill Next.js dev server (frees port 3000)
@@ -133,32 +143,32 @@ jobs:
       # This simulates the production environment (local DB + containerized app)
       # Different from above tests which use GitHub Actions infrastructure
       # ============================================
-      # Step 11: Build Docker containers (verify production build works)
+      # Step 12: Build Docker containers (verify production build works)
       - name: Build Docker containers
         run: docker compose build
       
-      # Step 12: Start Docker services (with local postgres)
+      # Step 13: Start Docker services (with local postgres)
       - name: Start Docker services
         run: docker compose up -d
       
-      # Step 13: Wait for database to be ready
+      # Step 14: Wait for database to be ready
       - name: Wait for database to be ready
         run: sleep 15
       
-      # Step 14: Run database migrations in Docker
+      # Step 15: Run database migrations in Docker
       - name: Run database migrations in Docker
         run: docker compose exec -T app npm run migrate
       
-      # Step 15: Verify deployment
+      # Step 16: Verify deployment
       - name: Verify deployment
         run: docker compose ps
       
-      # Step 16: Show container logs (helpful for debugging)
+      # Step 17: Show container logs (helpful for debugging)
       - name: Show logs on failure
         if: failure()
         run: docker compose logs
       
-      # Step 17: Clean up (always runs, even if tests failed)
+      # Step 18: Clean up (always runs, even if tests failed)
       - name: Tear down containers
         if: always()
         run: docker compose down -v
