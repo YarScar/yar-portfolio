@@ -115,6 +115,19 @@ jobs:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/portfolio_test?schema=public
       
       # ============================================
+      # SETUP DOCKER FOR DEPLOYMENT VERIFICATION
+      # Install Docker for the later Docker Compose verification steps
+      # ============================================
+      - name: Install Docker
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker.io docker-compose-plugin
+          sudo systemctl start docker
+          sudo systemctl enable docker
+          docker --version
+          docker compose version
+      
+      # ============================================
       # CLEANUP BEFORE DOCKER
       # Problem: After tests, dev server (port 3000) and GitHub Actions postgres (port 5432) are still running
       # Solution: Kill both processes to free up ports for Docker Compose
