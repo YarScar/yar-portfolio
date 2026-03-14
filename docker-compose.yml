@@ -21,7 +21,7 @@ services:
     # Map port 3000 in container to port 3000 on your machine
     # Access app at http://localhost:3000
     ports:
-      - "3000:3000"
+      - "80:3000"
     
     # Don't start app until database is healthy and ready
     # Prevents connection errors on startup
