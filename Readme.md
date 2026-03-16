@@ -26,7 +26,7 @@ A polished, full-stack portfolio showcasing projects, interactive UI, and a prod
 - Production-focused data layer: Prisma 6 with `@prisma/adapter-pg` via `DATABASE_URL`.
 - **Containerized development:** Dockerfile, docker-compose.yml, and .dockerignore included.
 - Fast tests with Vitest; scripts for development, build, and start are ready.
-- **Supports hosted databases:** ready for Neon or other PostgreSQL providers.
+- **Supports hosted databases:** ready for Neon or other PostgreSQL providers. 
 
 ## Tech Stack
 - Frontend: Next.js 16, React 18
