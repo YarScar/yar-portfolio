@@ -48,3 +48,25 @@
 .card .title{color:var(--color-text-light);font-weight:700;margin:0 0 0.5rem 0}
 .card .desc{color:var(--color-text);font-size:0.95rem;margin:0 0 0.75rem 0}
 .card .tags{display:flex;gap:0.5rem;flex-wrap:wrap}
+
+.projects-loading{
+  margin-top:1rem;
+  display:flex;
+  align-items:center;
+  gap:0.6rem;
+  color:var(--color-text-light);
+  font-weight:600;
+}
+
+.projects-spinner{
+  width:1.05rem;
+  height:1.05rem;
+  border-radius:50%;
+  border:2px solid rgba(216,180,254,0.25);
+  border-top-color:var(--color-primary);
+  animation:projectsSpin 0.8s linear infinite;
+}
+
+@keyframes projectsSpin{
+  to{transform:rotate(360deg)}
+}

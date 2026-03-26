@@ -3,3 +3,18 @@
 
 .form-row{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
 .label{font-weight:600;font-size:14px}
+
+.action-inline{display:inline-flex;align-items:center;gap:0.5rem}
+
+.action-spinner{
+	width:0.95rem;
+	height:0.95rem;
+	border-radius:50%;
+	border:2px solid rgba(216,180,254,0.25);
+	border-top-color:var(--color-primary);
+	animation:actionSpin 0.8s linear infinite;
+}
+
+@keyframes actionSpin{
+	to{transform:rotate(360deg)}
+}

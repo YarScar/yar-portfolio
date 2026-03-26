@@ -489,7 +489,14 @@ export default function EditProjectModal({ isOpen, onClose, project, onProjectUp
                 cursor: (isSubmitting || uploadingImage) ? 'not-allowed' : 'pointer'
               }}
             >
-              {uploadingImage ? 'Uploading Image...' : isSubmitting ? 'Updating...' : 'Update Project'}
+              {(uploadingImage || isSubmitting) ? (
+                <span className="action-inline">
+                  <span className="action-spinner" aria-hidden="true" />
+                  <span>{uploadingImage ? 'Uploading Image...' : 'Updating...'}</span>
+                </span>
+              ) : (
+                'Update Project'
+              )}
             </button>
             <button
               type="button"

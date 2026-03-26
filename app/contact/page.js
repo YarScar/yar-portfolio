@@ -35,8 +35,22 @@ export default function Contact() {
           <textarea value={state.message} onChange={e => setState(s=>({...s,message:e.target.value}))} className="input" rows={6} required />
 
           <div style={{marginTop:'0.75rem'}}>
-            <button type="submit" className="btn">Send Message</button>
-            <span style={{marginLeft:'0.6rem',color:'var(--color-text)'}}>{state.status === 'sending' ? 'Sending…' : state.status === 'sent' ? 'Sent — thank you!' : state.status === 'error' ? 'Error sending' : ''}</span>
+            <button
+              type="submit"
+              className="btn"
+              disabled={state.status === 'sending'}
+              style={{ opacity: state.status === 'sending' ? 0.7 : 1, cursor: state.status === 'sending' ? 'not-allowed' : 'pointer' }}
+            >
+              {state.status === 'sending' ? (
+                <span className="action-inline">
+                  <span className="action-spinner" aria-hidden="true" />
+                  <span>Sending…</span>
+                </span>
+              ) : (
+                'Send Message'
+              )}
+            </button>
+            <span style={{marginLeft:'0.6rem',color:'var(--color-text)'}}>{state.status === 'sent' ? 'Sent — thank you!' : state.status === 'error' ? 'Error sending' : ''}</span>
           </div>
         </div>
 

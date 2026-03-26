@@ -478,7 +478,14 @@ export default function AddProjectModal({ isOpen, onClose, onProjectAdded }) {
                 cursor: (isSubmitting || uploadingImage) ? 'not-allowed' : 'pointer'
               }}
             >
-              {uploadingImage ? 'Uploading Image...' : isSubmitting ? 'Creating...' : 'Create Project'}
+              {(uploadingImage || isSubmitting) ? (
+                <span className="action-inline">
+                  <span className="action-spinner" aria-hidden="true" />
+                  <span>{uploadingImage ? 'Uploading Image...' : 'Creating...'}</span>
+                </span>
+              ) : (
+                'Create Project'
+              )}
             </button>
             <button
               type="button"
