@@ -14,7 +14,9 @@ A polished, full-stack portfolio showcasing projects, interactive UI, and a prod
 - **Public pages:** `/about`, `/projects`, `/projects/[id]`, and `/contact`, with `/` redirecting to `/about`.
 - **Project showcase UI:** interactive 3D-style project cards, detailed project pages, tags, and optional live links.
 - **Admin mode workflow:** hidden cat-sprite trigger opens a secret modal; verified access enables add/edit/delete project controls in the projects UI.
-- **Project creation/editing:** modal forms support title, description, long description, tags, URL, and image upload.
+- **Project creation/editing:** modal forms support title, description, long description, tags, URL, image upload, and AI-assisted description enhancement.
+- **AI Project Description Helper (admin-only):** `Enhance with AI` improves description copy, and `Undo` restores the previous version if you don’t like the AI rewrite.
+- **Clear async loading states:** visible spinner indicators for projects loading, contact form sending, and admin submit/upload actions.
 - **Image upload pipeline:** `POST /api/upload` saves to local `public/uploads` in development and can use Vercel Blob in production.
 - **Contact capture:** contact form submits to `POST /api/contact` and persists messages to the `Message` table.
 - **Project API:** full CRUD via `/api/projects` and `/api/projects/[id]` with validation and proper status responses.
@@ -23,6 +25,8 @@ A polished, full-stack portfolio showcasing projects, interactive UI, and a prod
 ## Highlights
 - Robust project management: create, update, delete, and view project details.
 - Employer-friendly UX: interactive 3D-inspired cards and refined visual design.
+- Better perceived performance: consistent spinner feedback across page loading and form actions.
+- Smarter admin authoring: one-click AI description polish with one-step undo safety.
 - Production-focused data layer: Prisma 6 with `@prisma/adapter-pg` via `DATABASE_URL`.
 - **Containerized development:** Dockerfile, docker-compose.yml, and .dockerignore included.
 - Fast tests with Vitest; scripts for development, build, and start are ready.
@@ -31,6 +35,7 @@ A polished, full-stack portfolio showcasing projects, interactive UI, and a prod
 ## Tech Stack
 - Frontend: Next.js 16, React 18
 - Data: Prisma ORM, PostgreSQL (via `@prisma/adapter-pg`)
+- AI: OpenAI Responses API (`/api/ai/enhance-description`)
 - Testing: Vitest
 - UI/3D: CSS transforms with optional three.js utilities in components
 - Containerization: Docker + Docker Compose
@@ -73,7 +78,14 @@ A polished, full-stack portfolio showcasing projects, interactive UI, and a prod
 - `POST /api/contact` — accept contact messages `{ name?, email?, message }`
 - `GET /api/contact` — contact endpoint availability check
 - `POST /api/upload` — multipart upload; returns uploaded file URL
+- `POST /api/ai/enhance-description` — improves a project description via OpenAI and returns `{ description }`
 - `GET /api/dev/projects` — dev utility returning `{ ok, count, projects }`
+
+## Environment Variables
+- `DATABASE_URL` — PostgreSQL connection string used by Prisma.
+- `OPENAI_API_KEY` — required for the admin `Enhance with AI` description helper.
+- `OPENAI_MODEL` — optional model override for AI enhancement (falls back to available defaults).
+- `BLOB_READ_WRITE_TOKEN` — required when using Vercel Blob uploads in environments where local disk storage is not used.
 
 ## Running Locally with Docker
 
