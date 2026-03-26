@@ -14,6 +14,8 @@ export default function EditProjectModal({ isOpen, onClose, project, onProjectUp
   const [error, setError] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [isEnhancingDescription, setIsEnhancingDescription] = useState(false);
+  const [previousDescription, setPreviousDescription] = useState("");
 
   // Populate form when project changes
   useEffect(() => {
@@ -26,6 +28,7 @@ export default function EditProjectModal({ isOpen, onClose, project, onProjectUp
         image: project.image || "",
         tags: Array.isArray(project.tags) ? project.tags.join(", ") : ""
       });
+      setPreviousDescription("");
     }
   }, [project]);
 
@@ -130,8 +133,49 @@ export default function EditProjectModal({ isOpen, onClose, project, onProjectUp
     }
   };
 
+  const handleEnhanceDescription = async () => {
+    const currentDescription = projectData.description.trim();
+
+    if (!currentDescription) {
+      setError('Please enter a description first.');
+      return;
+    }
+
+    setIsEnhancingDescription(true);
+    setError('');
+
+    try {
+      const response = await fetch('/api/ai/enhance-description', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ description: currentDescription })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to enhance description');
+      }
+
+      setPreviousDescription(projectData.description);
+      handleInputChange('description', data.description || currentDescription);
+    } catch (err) {
+      setError(err.message || 'Failed to enhance description');
+    } finally {
+      setIsEnhancingDescription(false);
+    }
+  };
+
+  const handleUndoEnhancedDescription = () => {
+    handleInputChange('description', previousDescription);
+    setPreviousDescription("");
+  };
+
   const handleClose = () => {
     setSelectedFile(null);
+    setPreviousDescription("");
     setError("");
     onClose();
   };
@@ -279,6 +323,41 @@ export default function EditProjectModal({ isOpen, onClose, project, onProjectUp
                 fontFamily: 'inherit'
               }}
             />
+            <div style={{ marginTop: '0.6rem', display: 'flex', gap: '0.5rem' }}>
+              <button
+                type="button"
+                className="btn secondary"
+                onClick={handleEnhanceDescription}
+                disabled={isEnhancingDescription || isSubmitting || uploadingImage}
+                style={{
+                  opacity: (isEnhancingDescription || isSubmitting || uploadingImage) ? 0.7 : 1,
+                  cursor: (isEnhancingDescription || isSubmitting || uploadingImage) ? 'not-allowed' : 'pointer'
+                }}
+              >
+                {isEnhancingDescription ? (
+                  <span className="action-inline">
+                    <span className="action-spinner" aria-hidden="true" />
+                    <span>Enhancing…</span>
+                  </span>
+                ) : (
+                  'Enhance with AI'
+                )}
+              </button>
+              {previousDescription !== "" && (
+                <button
+                  type="button"
+                  className="btn secondary"
+                  onClick={handleUndoEnhancedDescription}
+                  disabled={isEnhancingDescription || isSubmitting || uploadingImage}
+                  style={{
+                    opacity: (isEnhancingDescription || isSubmitting || uploadingImage) ? 0.7 : 1,
+                    cursor: (isEnhancingDescription || isSubmitting || uploadingImage) ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  Undo
+                </button>
+              )}
+            </div>
           </div>
 
           <div>
@@ -479,14 +558,14 @@ export default function EditProjectModal({ isOpen, onClose, project, onProjectUp
           <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
             <button
               type="submit"
-              disabled={isSubmitting || uploadingImage}
+              disabled={isSubmitting || uploadingImage || isEnhancingDescription}
               className="btn"
               style={{
                 flex: 1,
                 fontSize: '1rem',
                 padding: '1rem',
-                opacity: (isSubmitting || uploadingImage) ? 0.7 : 1,
-                cursor: (isSubmitting || uploadingImage) ? 'not-allowed' : 'pointer'
+                opacity: (isSubmitting || uploadingImage || isEnhancingDescription) ? 0.7 : 1,
+                cursor: (isSubmitting || uploadingImage || isEnhancingDescription) ? 'not-allowed' : 'pointer'
               }}
             >
               {(uploadingImage || isSubmitting) ? (
