@@ -22,7 +22,7 @@ A polished, full-stack portfolio showcasing projects, interactive UI, and a prod
 - **Project API:** full CRUD via `/api/projects` and `/api/projects/[id]` with validation and proper status responses.
 - **Dev utility endpoint:** `GET /api/dev/projects` returns debug project payload in development (safe empty response in production).
 
-## Highlights
+## Highlights 
 - Robust project management: create, update, delete, and view project details.
 - Employer-friendly UX: interactive 3D-inspired cards and refined visual design.
 - Better perceived performance: consistent spinner feedback across page loading and form actions.
